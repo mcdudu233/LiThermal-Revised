@@ -32,17 +32,39 @@ int serialSetup()
     if (tcgetattr(serial_port, &tty) != 0)
     {
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
+        return -1;
     }
-    tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
-    tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
-    tty.c_cflag &= ~CSIZE;  // Clear all the size bits, then use one of the statements below
-    tty.c_cflag |= CS8;     // 8 bits per byte (most common)
-    // tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
-    tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
-    tty.c_lflag &= ~ICANON;
+    tty.c_iflag &= ~(IGNBRK | BRKINT | ICRNL |
+        INLCR | PARMRK | INPCK | ISTRIP | IXON);
+
+
+    tty.c_oflag = 0;
+    //
+    // No line processing
+    //
+    // echo off, echo newline off, canonical mode off,
+    // extended input processing off, signal chars off
+    //
+    tty.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+
+    //
+    // Turn off character processing
+    //
+    // clear current char size mask, no parity checking,
+    // no output processing, force 8 bit input
+    //
+    tty.c_cflag &= ~(CSIZE | PARENB);
+    tty.c_cflag |= CS8;
+
+    //
+    // One input byte is enough to return from read()
+    // Inter-character timer off
+    //
+    tty.c_cc[VMIN] = 1;
+    tty.c_cc[VTIME] = 0;
     cfsetispeed(&tty, B115200);
     cfsetospeed(&tty, B115200);
-    if (tcsetattr(serial_port, TCSANOW, &tty) != 0)
+    if (tcsetattr(serial_port, TCSAFLUSH, &tty) != 0)
     {
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
         return -1;
