@@ -8,6 +8,9 @@ void *thread_app_func(void *)
     static uint32_t last_color_palette = -1;
     static uint32_t last_show_center = -1;
     static int centerRefreshCounter = 0;
+    static uint32_t last_use4117Cursors = -1;
+    static uint32_t last_enableMinValueDisplay = -1;
+    static uint32_t last_enableMaxValueDisplay = -1;
     while (cameraUtils.connected == false)
         usleep(100000);
     sleep(1);
@@ -27,6 +30,23 @@ void *thread_app_func(void *)
         {
             last_show_center = globalSettings.enableCenterValueDisplay;
             cameraUtils.setCenterMeasure(last_show_center);
+        }
+        if (last_use4117Cursors != globalSettings.use4117Cursors)
+        {
+            last_use4117Cursors = globalSettings.use4117Cursors;
+            if (last_use4117Cursors)
+                cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
+            else
+                cameraUtils.set4117Cursor(false, false);
+            last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
+            last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
+        }
+        if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay || last_enableMinValueDisplay != globalSettings.enableMinValueDisplay)
+        {
+            if (globalSettings.use4117Cursors)
+                cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
+            last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
+            last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
         }
         if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
         {

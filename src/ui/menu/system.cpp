@@ -6,7 +6,8 @@ static MyCard mycardMenuSystem;
 #define MENU_SYSTEM_CARD_POS_Y 30
 static int factory_reset_cnt;
 static lv_obj_t *ui_Switch2;
-static lv_obj_t *ui_Switch1;
+static lv_obj_t *ui_Checkbox6;
+static lv_obj_t *ui_Checkbox7;
 static void card_menu_system_construct(lv_obj_t *parent)
 {
     factory_reset_cnt = 3;
@@ -20,21 +21,36 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_style_text_font(parent, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Panel5 = lv_obj_create(parent);
-    lv_obj_set_width(ui_Panel5, 270);
+    lv_obj_set_width(ui_Panel5, 140);
     lv_obj_set_height(ui_Panel5, 42);
     lv_obj_clear_flag(ui_Panel5, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
-    ui_Switch1 = lv_switch_create(ui_Panel5);
-    lv_obj_set_width(ui_Switch1, 50);
-    lv_obj_set_height(ui_Switch1, 25);
-    lv_obj_set_align(ui_Switch1, LV_ALIGN_RIGHT_MID);
+    ui_Checkbox6 = lv_checkbox_create(ui_Panel5);
+    lv_checkbox_set_text(ui_Checkbox6, "照片保留UI");
+    lv_obj_set_width(ui_Checkbox6, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Checkbox6, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Checkbox6, -5);
+    lv_obj_set_y(ui_Checkbox6, 0);
+    lv_obj_set_align(ui_Checkbox6, LV_ALIGN_LEFT_MID);
+    lv_obj_add_flag(ui_Checkbox6, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_set_style_text_font(ui_Checkbox6, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_t *ui_Label11 = lv_label_create(ui_Panel5);
-    lv_obj_set_width(ui_Label11, LV_SIZE_CONTENT);  /// 1
-    lv_obj_set_height(ui_Label11, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_align(ui_Label11, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_Label11, "照片保留UI");
-    lv_obj_set_style_text_font(ui_Label11, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_t *ui_Panel11 = lv_obj_create(parent);
+    lv_obj_set_width(ui_Panel11, 119);
+    lv_obj_set_height(ui_Panel11, 42);
+    lv_obj_set_x(ui_Panel11, 150);
+    lv_obj_set_y(ui_Panel11, 0);
+    lv_obj_clear_flag(ui_Panel11, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_Checkbox7 = lv_checkbox_create(ui_Panel11);
+    lv_checkbox_set_text(ui_Checkbox7, "内置准星");
+    lv_obj_set_width(ui_Checkbox7, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Checkbox7, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Checkbox7, -5);
+    lv_obj_set_y(ui_Checkbox7, 0);
+    lv_obj_set_align(ui_Checkbox7, LV_ALIGN_LEFT_MID);
+    lv_obj_add_flag(ui_Checkbox7, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_set_style_text_font(ui_Checkbox7, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Panel10 = lv_obj_create(parent);
     lv_obj_set_width(ui_Panel10, 270);
@@ -103,8 +119,10 @@ static void card_menu_system_construct(lv_obj_t *parent)
 
     lv_group_focus_obj(ui_Button1);
 
-    lv_obj_add_event_cb(ui_Switch1, [](lv_event_t *e)
+    lv_obj_add_event_cb(ui_Checkbox6, [](lv_event_t *e)
                         { globalSettings.preserveUI = lv_obj_has_state(e->target, LV_STATE_CHECKED); }, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_Checkbox7, [](lv_event_t *e)
+                        { globalSettings.use4117Cursors = lv_obj_has_state(e->target, LV_STATE_CHECKED); }, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(ui_Switch2, [](lv_event_t *e)
                         { globalSettings.useBlackFlashBang = lv_obj_has_state(e->target, LV_STATE_CHECKED); }, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(ui_Button1, [](lv_event_t *e)
@@ -117,7 +135,8 @@ static void card_menu_system_construct(lv_obj_t *parent)
             lv_label_set_text(lv_obj_get_child(e->target, 0), "已恢复");
             settings_default();
             settings_save();
-            lv_obj_clear_state(ui_Switch1, LV_STATE_CHECKED);
+            lv_obj_clear_state(ui_Checkbox6, LV_STATE_CHECKED);
+            lv_obj_clear_state(ui_Checkbox7, LV_STATE_CHECKED);
             lv_obj_clear_state(ui_Switch2, LV_STATE_CHECKED);
             widget_graph_updateSettings();
             ui_crosshairs_updateVisibility();
@@ -129,7 +148,9 @@ static void card_menu_system_construct(lv_obj_t *parent)
         --factory_reset_cnt; }, LV_EVENT_CLICKED, NULL);
 
     if (globalSettings.preserveUI)
-        lv_obj_add_state(ui_Switch1, LV_STATE_CHECKED);
+        lv_obj_add_state(ui_Checkbox6, LV_STATE_CHECKED);
+    if (globalSettings.use4117Cursors)
+        lv_obj_add_state(ui_Checkbox7, LV_STATE_CHECKED);
     if (globalSettings.useBlackFlashBang)
         lv_obj_add_state(ui_Switch2, LV_STATE_CHECKED);
 }

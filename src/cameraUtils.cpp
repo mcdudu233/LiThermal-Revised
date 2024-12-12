@@ -256,3 +256,60 @@ void CameraUtils::calibrateManually()
 {
     cli.Put("/ISAPI/Image/channels/1/ManualShutterCorrect", "", "application/xml");
 }
+
+void CameraUtils::set4117Cursor(bool min, bool max)
+{
+    auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/basicParam");
+    int len;
+    if (res && res->status == 200) {
+        std::string body = res->body;
+        std::string line;
+        std::string result = "";
+        int last_start = 0;
+        int this_end;
+        int length = body.length();
+        while (1)
+        {
+            this_end = body.find("\n", last_start);
+            if (this_end == std::string::npos){
+                result += body.substr(last_start, length - last_start);
+                break;
+            }
+            line = body.substr(last_start, this_end - last_start);
+            if (line == "") {
+                printf("Warning: Empty line\n");
+                break;
+            }
+            last_start = this_end + 1;
+            if (line.find("displayMax") != std::string::npos)
+            {
+                if (max) {
+                    result += "<displayMaxTemperatureEnabled>true</displayMaxTemperatureEnabled>\n";
+                } else {
+                    result += "<displayMaxTemperatureEnabled>false</displayMaxTemperatureEnabled>\n";
+                }
+            }
+            else if (line.find("displayMin") != std::string::npos)
+            {
+                if (min) {
+                    result += "<displayMinTemperatureEnabled>true</displayMinTemperatureEnabled>\n";
+                } else {
+                    result += "<displayMinTemperatureEnabled>false</displayMinTemperatureEnabled>\n";
+                }
+            }
+            else if (line.find("<enabled>") != std::string::npos)
+            {
+                result += "<enabled>true</enabled>\n";
+            }
+            else if (line.find("<streamOverlay>") != std::string::npos)
+            {
+                result += "<streamOverlay>true</streamOverlay>\n";
+            }
+            else
+            {
+                result += line + "\n";
+            }
+        }
+        cli.Put("/ISAPI/Thermal/channels/1/thermometry/basicParam", result, "application/x-www-form-urlencoded; charset=UTF-8");
+    }
+}

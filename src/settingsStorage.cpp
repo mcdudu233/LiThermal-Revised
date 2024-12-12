@@ -16,6 +16,7 @@ void settings_default()
     globalSettings.enableCenterValueDisplay = true;
     globalSettings.preserveUI = false;
     globalSettings.useBlackFlashBang = false;
+    globalSettings.use4117Cursors = false;
     globalSettings.__tail = SETTINGS_TAIL;
 }
 

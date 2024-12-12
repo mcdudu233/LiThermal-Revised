@@ -16,6 +16,7 @@ typedef struct settingsStorage_t
     uint32_t enableCenterValueDisplay;
     uint32_t preserveUI;
     uint32_t useBlackFlashBang;
+    uint32_t use4117Cursors;
     uint32_t __tail;
 } settingsStorage_t;
 extern settingsStorage_t globalSettings;
