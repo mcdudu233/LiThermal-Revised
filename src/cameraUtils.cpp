@@ -88,7 +88,7 @@ void CameraUtils::getTemperature()
         printf("Failed to get temperature\n");
     }
 
-    auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/jpegPicWithAppendData?format=json");
+    res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/jpegPicWithAppendData?format=json");
     if (res && res->status == 200)
     {
         // Parse the response headers to get the boundary string
