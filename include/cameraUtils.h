@@ -6,6 +6,7 @@ typedef struct temperature_point_t
     float maxTemperature;
     float minTemperature;
     float averageTemperature;
+    float centerTemperature;
     struct
     {
         float positionX;

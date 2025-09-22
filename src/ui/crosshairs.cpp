@@ -2,10 +2,13 @@
 
 lv_obj_t *crosshairs_max_obj = NULL;
 lv_obj_t *crosshairs_min_obj = NULL;
+lv_obj_t *crosshairs_center_obj = NULL;
 lv_obj_t *crosshairs_max = NULL;
 lv_obj_t *crosshairs_min = NULL;
+lv_obj_t *crosshairs_center = NULL;
 lv_obj_t *crosshairs_label_max = NULL;
 lv_obj_t *crosshairs_label_min = NULL;
+lv_obj_t *crosshairs_label_center = NULL;
 
 extern "C" const lv_img_dsc_t crosshairs;
 void ui_crosshairs_updateVisibility()
@@ -13,6 +16,7 @@ void ui_crosshairs_updateVisibility()
     if (globalSettings.use4117Cursors) {
         lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
         return;
     }
     if (globalSettings.enableMaxValueDisplay)
@@ -31,8 +35,17 @@ void ui_crosshairs_updateVisibility()
     {
         lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
     }
+    if (globalSettings.enableCenterValueDisplay)
+    {
+        lv_obj_clear_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
+    }
     lv_obj_move_foreground(crosshairs_max_obj);
     lv_obj_move_foreground(crosshairs_min_obj);
+    lv_obj_move_foreground(crosshairs_center_obj);
 }
 
 static void crosshair_anim_move(lv_obj_t *obj, lv_coord_t x, lv_coord_t y)
@@ -85,6 +98,7 @@ void ui_crosshairs_updatePos()
         hidden_by_view = true;
         lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
     }
     if (globalSettings.enableMaxValueDisplay)
     {
@@ -109,6 +123,16 @@ void ui_crosshairs_updatePos()
         crosshair_anim_move(crosshairs_min_obj, x, y);
         sprintf(buffer, "%.1f", cameraUtils.lastResult.minTemperature);
         lv_label_set_text(crosshairs_label_min, buffer);
+    }
+    if (globalSettings.enableCenterValueDisplay)
+    {
+        x = 160;
+        y = 120;
+        x -= 7;
+        y -= 7;
+        crosshair_anim_move(crosshairs_center_obj, x, y);
+        sprintf(buffer, "%.1f", cameraUtils.lastResult.centerTemperature);
+        lv_label_set_text(crosshairs_label_center, buffer);
     }
 }
 
@@ -145,9 +169,27 @@ void ui_crosshairs_create()
     lv_obj_set_style_bg_opa(crosshairs_label_min, LV_OPA_50, 0);
     lv_obj_set_style_radius(crosshairs_label_min, 3, 0);
     lv_obj_align_to(crosshairs_label_min, crosshairs_min, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    crosshairs_center_obj = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(crosshairs_center_obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+    lv_obj_set_style_pad_all(crosshairs_center_obj, 0, 0);
+    lv_obj_set_style_bg_opa(crosshairs_center_obj, 0, 0);
+    lv_obj_set_style_border_width(crosshairs_center_obj, 0, 0);
+    lv_obj_set_style_radius(crosshairs_center_obj, 0, 0);
+    lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
+
+    crosshairs_center = lv_img_create(crosshairs_center_obj);
+    lv_img_set_src(crosshairs_center, &crosshairs);
+    crosshairs_label_center = lv_label_create(crosshairs_center_obj);
+    lv_obj_set_style_bg_color(crosshairs_label_center, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(crosshairs_label_center, LV_OPA_50, 0);
+    lv_obj_set_style_radius(crosshairs_label_center, 3, 0);
+    lv_obj_align_to(crosshairs_label_center, crosshairs_center, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
     if (globalSettings.use4117Cursors)
     {
         lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
     }
 }

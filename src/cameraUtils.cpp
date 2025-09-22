@@ -87,6 +87,22 @@ void CameraUtils::getTemperature()
     {
         printf("Failed to get temperature\n");
     }
+
+    auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/jpegPicWithAppendData?format=json");
+    if (res && res->status == 200)
+    {
+        // Parse the response headers to get the boundary string
+        std::string contentType = res->get_header_value("Content-Type");
+        std::string boundary = extract_boundary(contentType);
+
+        // Split the response body into parts using the boundary string
+        std::vector<std::string> parts = split_multipart(res->body, boundary);
+        if (parts.size() < 3)
+        {
+            printf("Failed to split multipart response\n");
+        }
+        lastResult.centerTemperature = *(float *)((uint8_t *)parts[2].c_str() + ((160 + 120 * 160) * 4));
+    }
 }
 
 const char *color_palette[] = {

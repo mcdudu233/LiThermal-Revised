@@ -26,20 +26,23 @@ void *thread_app_func(void *)
             last_color_palette = globalSettings.colorPalette;
             cameraUtils.setColorPalette(globalSettings.colorPalette);
         }
-        if (last_show_center != globalSettings.enableCenterValueDisplay)
-        {
-            last_show_center = globalSettings.enableCenterValueDisplay;
-            cameraUtils.setCenterMeasure(last_show_center);
-        }
         if (last_use4117Cursors != globalSettings.use4117Cursors)
         {
             last_use4117Cursors = globalSettings.use4117Cursors;
+            
             if (last_use4117Cursors)
+            {
                 cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
+                cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
+            }
             else
+            {
                 cameraUtils.set4117Cursor(false, false);
+                cameraUtils.setCenterMeasure(false);
+            }
             last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
             last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
+            last_show_center = globalSettings.enableCenterValueDisplay;
         }
         if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay || last_enableMinValueDisplay != globalSettings.enableMinValueDisplay)
         {
@@ -47,6 +50,12 @@ void *thread_app_func(void *)
                 cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
             last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
             last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
+        }
+        if (last_show_center != globalSettings.enableCenterValueDisplay)
+        {
+            if (globalSettings.use4117Cursors)
+                cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
+            last_show_center = globalSettings.enableCenterValueDisplay;
         }
         if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
         {
