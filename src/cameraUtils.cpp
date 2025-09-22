@@ -35,6 +35,7 @@ void CameraUtils::initHTTPClient()
 }
 #include <cJSON.h>
 static std::string extract_boundary(const std::string &contentType);
+static std::vector<std::string> split_multipart(const std::string &body, const std::string &boundary);
 void CameraUtils::getTemperature()
 {
     auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/1/rulesTemperatureInfo?format=json");
