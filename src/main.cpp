@@ -60,14 +60,31 @@ void *thread_app_func(void *)
     }
     return NULL;
 }
+
+// UI刷新线程
 pthread_t thread_ui;
 void *thread_ui_func(void *)
 {
     HAL::lv_loop();
 }
+
+// 自动配置端口映射
+void port_forward(){
+    system("echo 1 > /proc/sys/net/ipv4/ip_forward");
+    system("sysctl -w net.ipv4.conf.all.route_localnet=1");
+    system("modprobe iptable_nat");
+    system("modprobe xt_nat");
+    system("iptables -t nat -F");
+    system("iptables -t nat -X");
+    system("iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j DNAT --to 192.168.64.64:80");
+    system("iptables -t nat -A POSTROUTING -p tcp -s 127.0.0.1 -d 192.168.64.64 --dport 80 -j SNAT --to 192.168.64.32");
+}
+
 int main()
 {
     sleep(1); // Why?
+    port_forward();
+
     system("mkdir " GALLERY_PATH);
     pthread_mutex_init(&lv_mutex, NULL);
     HAL::init();
