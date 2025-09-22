@@ -184,7 +184,7 @@ void ui_crosshairs_create()
     lv_obj_set_style_bg_color(crosshairs_label_center, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(crosshairs_label_center, LV_OPA_50, 0);
     lv_obj_set_style_radius(crosshairs_label_center, 3, 0);
-    lv_obj_align_to(crosshairs_label_center, crosshairs_center, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+    lv_obj_align_to(crosshairs_label_center, crosshairs_center, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
     if (globalSettings.use4117Cursors)
     {

@@ -12,8 +12,7 @@ void *thread_app_func(void *)
     static uint32_t last_enableMinValueDisplay = -1;
     static uint32_t last_enableMaxValueDisplay = -1;
     while (cameraUtils.connected == false)
-        usleep(100000);
-    sleep(1);
+        usleep(40000);
     LOCKLV();
     widget_graph_updateSettings();
     ui_crosshairs_updateVisibility();
@@ -29,7 +28,6 @@ void *thread_app_func(void *)
         if (last_use4117Cursors != globalSettings.use4117Cursors)
         {
             last_use4117Cursors = globalSettings.use4117Cursors;
-            
             if (last_use4117Cursors)
             {
                 cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
@@ -44,17 +42,15 @@ void *thread_app_func(void *)
             last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
             last_show_center = globalSettings.enableCenterValueDisplay;
         }
-        if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay || last_enableMinValueDisplay != globalSettings.enableMinValueDisplay)
+        if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay || last_enableMinValueDisplay != globalSettings.enableMinValueDisplay || last_show_center != globalSettings.enableCenterValueDisplay)
         {
             if (globalSettings.use4117Cursors)
+            {
                 cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay, globalSettings.enableMaxValueDisplay);
+                cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
+            }
             last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
             last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
-        }
-        if (last_show_center != globalSettings.enableCenterValueDisplay)
-        {
-            if (globalSettings.use4117Cursors)
-                cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
             last_show_center = globalSettings.enableCenterValueDisplay;
         }
         if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
@@ -65,6 +61,7 @@ void *thread_app_func(void *)
         ui_crosshairs_updatePos();
         widget_graph_check_visibility();
         UNLOCKLV();
+
         usleep(40000);
     }
     return NULL;

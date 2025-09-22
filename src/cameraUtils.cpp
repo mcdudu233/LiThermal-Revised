@@ -103,7 +103,7 @@ void CameraUtils::getTemperature()
         {
             printf("Failed to split multipart response\n");
         }
-        lastResult.centerTemperature = *(float *)((uint8_t *)parts[2].c_str() + ((160 + 120 * 160) * 4));
+        lastResult.centerTemperature = *(float *)((uint8_t *)parts[2].c_str() + ((80 + 60 * 160) * 4));
     }
 }
 
