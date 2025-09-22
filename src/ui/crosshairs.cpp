@@ -180,7 +180,7 @@ void ui_crosshairs_create()
 
     crosshairs_center = lv_img_create(crosshairs_center_obj);
     lv_img_set_src(crosshairs_center, &crosshairs);
-    crosshairs_label_center = lv_label_create(lv_scr_act());
+    crosshairs_label_center = lv_label_create(crosshairs_center_obj);
     lv_obj_set_style_text_font(crosshairs_label_center, &lv_font_montserrat_12, 0);
     lv_obj_set_style_bg_color(crosshairs_label_center, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(crosshairs_label_center, LV_OPA_30, 0);
