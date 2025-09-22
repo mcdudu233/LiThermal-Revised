@@ -149,6 +149,8 @@ void ui_crosshairs_create()
     crosshairs_max = lv_img_create(crosshairs_max_obj);
     lv_img_set_src(crosshairs_max, &crosshairs);
     crosshairs_label_max = lv_label_create(crosshairs_max_obj);
+    lv_obj_set_style_text_font(crosshairs_label_max, &lv_font_montserrat_14, 0);
+    lv_style_set_text_color(crosshairs_label_max, lv_color_make(0xEC, 0x8E, 0x9C));
     lv_obj_set_style_bg_color(crosshairs_label_max, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(crosshairs_label_max, LV_OPA_50, 0);
     lv_obj_set_style_radius(crosshairs_label_max, 3, 0);
@@ -165,6 +167,8 @@ void ui_crosshairs_create()
     crosshairs_min = lv_img_create(crosshairs_min_obj);
     lv_img_set_src(crosshairs_min, &crosshairs);
     crosshairs_label_min = lv_label_create(crosshairs_min_obj);
+    lv_obj_set_style_text_font(crosshairs_label_min, &lv_font_montserrat_14, 0);
+    lv_style_set_text_color(crosshairs_label_min, lv_color_make(0x87, 0xCE, 0xEB));
     lv_obj_set_style_bg_color(crosshairs_label_min, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(crosshairs_label_min, LV_OPA_50, 0);
     lv_obj_set_style_radius(crosshairs_label_min, 3, 0);
@@ -185,7 +189,7 @@ void ui_crosshairs_create()
     lv_obj_set_style_bg_color(crosshairs_label_center, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(crosshairs_label_center, LV_OPA_30, 0);
     lv_obj_set_style_radius(crosshairs_label_center, 3, 0);
-    lv_obj_align_to(crosshairs_label_center, crosshairs_center, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align_to(crosshairs_label_center, crosshairs_center, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
 
     if (globalSettings.use4117Cursors)
     {
