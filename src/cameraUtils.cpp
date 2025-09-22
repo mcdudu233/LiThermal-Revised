@@ -34,6 +34,7 @@ void CameraUtils::initHTTPClient()
     cli.set_basic_auth("admin", "Ab123456");
 }
 #include <cJSON.h>
+static std::string extract_boundary(const std::string &contentType);
 void CameraUtils::getTemperature()
 {
     auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/1/rulesTemperatureInfo?format=json");
