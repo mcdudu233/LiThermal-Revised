@@ -68,7 +68,8 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "xstring": "cpp"
     },
     "C_Cpp.default.compilerPath": "/home/lxy/Desktop/tina-sdk/prebuilt/gcc/linux-x86/arm/toolchain-sunxi-musl/toolchain/bin/arm-openwrt-linux-gcc",
     "debug.onTaskErrors": "abort",

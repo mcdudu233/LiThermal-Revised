@@ -1,7 +1,8 @@
 #include "my_main.h"
 pthread_mutex_t lv_mutex;
 
-/// @brief 热成像刷新线程
+using namespace std;
+// 热成像刷新线程
 pthread_t thread_app;
 void *thread_app_func(void *)
 {
@@ -12,7 +13,7 @@ void *thread_app_func(void *)
     static uint32_t last_enableMinValueDisplay = -1;
     static uint32_t last_enableMaxValueDisplay = -1;
     while (cameraUtils.connected == false)
-        usleep(40000);
+        usleep(50000);
     LOCKLV();
     widget_graph_updateSettings();
     ui_crosshairs_updateVisibility();
@@ -53,18 +54,62 @@ void *thread_app_func(void *)
             last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
             last_show_center = globalSettings.enableCenterValueDisplay;
         }
-        if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
-        {
-            cameraUtils.getTemperature();
-        }
         LOCKLV();
         ui_crosshairs_updatePos();
         widget_graph_check_visibility();
         UNLOCKLV();
-
+        
         usleep(40000);
     }
     return NULL;
+}
+
+#include <chrono>
+#include <iostream>
+// 热成像温度更新线程 5HZ
+pthread_t thread_temperature;
+void *thread_temperature_func(void *){
+    while (cameraUtils.connected == false)
+        usleep(50000);
+    while(1){
+        auto start = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
+        {
+            if (!globalSettings.use4117Cursors && (globalSettings.enableMinValueDisplay || globalSettings.enableMaxValueDisplay))
+            {
+                cameraUtils.getTemperature();
+            }
+        }
+        auto end = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        auto last = end - start;
+        if (last < 200)
+        {
+            usleep(200000 - last * 1000);
+        }
+    }
+}
+
+// 热成像中心温度更新线程 2HZ
+pthread_t thread_temperature_center;
+void *thread_temperature_center_func(void *){
+    while (cameraUtils.connected == false)
+        usleep(50000);
+    while(1){
+        auto start = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
+        {
+            if (!globalSettings.use4117Cursors && globalSettings.enableCenterValueDisplay)
+            {
+                cameraUtils.getTemperatureCenter();
+            }
+        }
+        auto end = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        auto last = end - start;
+        if (last < 500)
+        {
+            usleep(500000 - last * 1000);
+        }
+    }
 }
 
 // UI刷新线程
@@ -105,6 +150,8 @@ int main()
     pthread_create(&thread_ui, NULL, thread_ui_func, NULL);
     cameraUtils.initHTTPClient();
     pthread_create(&thread_app, NULL, thread_app_func, NULL);
+    pthread_create(&thread_temperature, NULL, thread_temperature_func, NULL);
+    pthread_create(&thread_temperature_center, NULL, thread_temperature_center_func, NULL);
     void *result;
     pthread_join(thread_ui, &result);
     return 0;

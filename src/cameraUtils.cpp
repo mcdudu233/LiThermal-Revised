@@ -33,9 +33,8 @@ void CameraUtils::initHTTPClient()
 {
     cli.set_basic_auth("admin", "Ab123456");
 }
+
 #include <cJSON.h>
-static std::string extract_boundary(const std::string &contentType);
-static std::vector<std::string> split_multipart(const std::string &body, const std::string &boundary);
 void CameraUtils::getTemperature()
 {
     auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/1/rulesTemperatureInfo?format=json");
@@ -89,8 +88,13 @@ void CameraUtils::getTemperature()
     {
         printf("Failed to get temperature\n");
     }
+}
 
-    res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/jpegPicWithAppendData?format=json");
+static std::string extract_boundary(const std::string &contentType);
+static std::vector<std::string> split_multipart(const std::string &body, const std::string &boundary);
+void CameraUtils::getTemperatureCenter()
+{
+    auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/jpegPicWithAppendData?format=json");
     if (res && res->status == 200)
     {
         // Parse the response headers to get the boundary string
@@ -103,6 +107,7 @@ void CameraUtils::getTemperature()
         {
             printf("Failed to split multipart response\n");
         }
+        // 取中心位置
         lastResult.centerTemperature = *(float *)((uint8_t *)parts[2].c_str() + ((80 + 60 * 160) * 4));
     }
 }

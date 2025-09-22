@@ -48,6 +48,7 @@ public:
     void setCameraIP();           // 设置摄像头固定IP
     void initHTTPClient();        // 初始化HTTP客户端（即设置HTTP认证）
     void getTemperature();        // 获取摄像头温度信息
+    void getTemperatureCenter();        // 获取摄像头中心温度信息
     void setColorPalette(int palette);
     void setDigitalNoiceReduce(int mode, int frameLevel, int interFrameLevel);
     void setDigitalDetailEnhancement(bool en, int level);
