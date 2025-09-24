@@ -22,6 +22,30 @@
 
 ### 编译
 
+所有编译要用到的工具均在 **build** 目录下了！
+
+1. 首先安装必要的编译工具
+
+   ```bash
+   # Ubuntu
+   sudo apt install cmake make
+   # Centos
+   sudo yum install camke make
+   ```
+
+2. 在本目录下运行 build.sh
+
+   ```bash
+   cd LiThermal-Revised/build
+   # 运行 build.sh
+   bash build.sh
+   # 或者 ./build.sh
+   ```
+
+3. 无报错则编译完成
+
+   编译完成后将产生 **UDISK** 文件夹，将该文件夹下所有文件替换掉原版文件即可。
+
 ## 复刻教程
 
 请见原版的 **[README.md](https://github.com/diylxy/LiThermal/blob/master/README.md)** 或者本项目中的 **[README_ORIGINAL.md](https://github.com/mcdudu233/LiThermal-Revised/blob/master/README_ORIGINAL.md)** 。

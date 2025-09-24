@@ -1,3 +1,2 @@
-build
-backups
-test
+build/tmp
+build/UDISK
