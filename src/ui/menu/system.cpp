@@ -111,7 +111,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_x(ui_Label15, 0);
     lv_obj_set_y(ui_Label15, 150);
     lv_obj_set_align(ui_Label15, LV_ALIGN_TOP_MID);
-    lv_label_set_text(ui_Label15, "作者：小李电子实验室\n开源协议：GPL 3.0");
+    lv_label_set_text(ui_Label15, "原作者：小李电子实验室 修订版：dudu233\n开源协议：GPL 3.0");
     lv_obj_set_style_text_color(ui_Label15, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_Label15, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
