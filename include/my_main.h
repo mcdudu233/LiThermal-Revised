@@ -29,8 +29,9 @@
 extern "C"
 {
 #endif
-    extern const lv_font_t ui_font_ali24;
-    extern const lv_font_t ui_font_chinese16;
+    extern const lv_font_t ui_font_chinese_14;
+    extern const lv_font_t ui_font_chinese_16;
+    extern const lv_font_t ui_font_chinese_18;
     extern const lv_font_t ui_font_fontawesome16;
     extern const lv_font_t ui_font_fontawesome24;
 #ifdef __cplusplus

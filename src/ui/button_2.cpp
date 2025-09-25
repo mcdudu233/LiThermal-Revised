@@ -72,7 +72,7 @@ void menu_button_2_construct(lv_obj_t *parent)
     lv_obj_set_y(ui_Label5, 40);
     lv_obj_set_align(ui_Label5, LV_ALIGN_TOP_MID);
     lv_label_set_text(ui_Label5, "相册");
-    lv_obj_set_style_text_font(ui_Label5, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label5, &ui_font_chinese_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Button3 = lv_btn_create(parent);
     lv_obj_set_width(ui_Button3, MENU_BUTTON_2_BUTTON_WIDTH_DEFAULT);
@@ -101,7 +101,7 @@ void menu_button_2_construct(lv_obj_t *parent)
     lv_obj_set_y(ui_Label7, 40);
     lv_obj_set_align(ui_Label7, LV_ALIGN_TOP_MID);
     lv_label_set_text(ui_Label7, "相机\n设置");
-    lv_obj_set_style_text_font(ui_Label7, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label7, &ui_font_chinese_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Button4 = lv_btn_create(parent);
     lv_obj_set_width(ui_Button4, MENU_BUTTON_2_BUTTON_WIDTH_DEFAULT);
@@ -130,7 +130,7 @@ void menu_button_2_construct(lv_obj_t *parent)
     lv_obj_set_y(ui_Label9, 40);
     lv_obj_set_align(ui_Label9, LV_ALIGN_TOP_MID);
     lv_label_set_text(ui_Label9, "系统\n设置");
-    lv_obj_set_style_text_font(ui_Label9, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label9, &ui_font_chinese_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // events
     lv_obj_add_event_cb(ui_Button2, event_button_clicked_cb, LV_EVENT_ALL, reinterpret_cast<void *>(0));

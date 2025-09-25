@@ -28,7 +28,7 @@ static void lv_ui_poweroff()
     if (lbl_power_off_prompt == NULL || (lv_obj_is_valid(lbl_power_off_prompt) == false))
     {
         lbl_power_off_prompt = lv_label_create(mycardPower.obj);
-        lv_obj_set_style_text_font(lbl_power_off_prompt, &ui_font_chinese16, 0);
+        lv_obj_set_style_text_font(lbl_power_off_prompt, &ui_font_chinese_16, 0);
         lv_obj_center(lbl_power_off_prompt);
     }
     mycardPower.show(CARD_ANIM_NONE);

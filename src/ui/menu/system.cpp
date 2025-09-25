@@ -18,7 +18,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     // lv_obj_set_y(ui_Panel2, 30);
     // lv_obj_set_align(ui_Panel2, LV_ALIGN_TOP_MID);
     lv_obj_clear_flag(parent, LV_OBJ_FLAG_SCROLLABLE); /// Flags
-    lv_obj_set_style_text_font(parent, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(parent, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Panel5 = lv_obj_create(parent);
     lv_obj_set_width(ui_Panel5, 140);
@@ -33,7 +33,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_y(ui_Checkbox6, 0);
     lv_obj_set_align(ui_Checkbox6, LV_ALIGN_LEFT_MID);
     lv_obj_add_flag(ui_Checkbox6, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_set_style_text_font(ui_Checkbox6, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Checkbox6, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Panel11 = lv_obj_create(parent);
     lv_obj_set_width(ui_Panel11, 119);
@@ -50,7 +50,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_y(ui_Checkbox7, 0);
     lv_obj_set_align(ui_Checkbox7, LV_ALIGN_LEFT_MID);
     lv_obj_add_flag(ui_Checkbox7, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_set_style_text_font(ui_Checkbox7, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Checkbox7, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Panel10 = lv_obj_create(parent);
     lv_obj_set_width(ui_Panel10, 270);
@@ -69,7 +69,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_height(ui_Label14, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label14, LV_ALIGN_LEFT_MID);
     lv_label_set_text(ui_Label14, "拍照动画反色");
-    lv_obj_set_style_text_font(ui_Label14, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label14, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Button1 = lv_btn_create(parent);
     lv_obj_set_width(ui_Button1, 140);
@@ -86,7 +86,7 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_height(ui_Label12, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label12, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label12, "手动清除噪声");
-    lv_obj_set_style_text_font(ui_Label12, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label12, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Button6 = lv_btn_create(parent);
     lv_obj_set_width(ui_Button6, 120);
@@ -103,19 +103,19 @@ static void card_menu_system_construct(lv_obj_t *parent)
     lv_obj_set_height(ui_Label13, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Label13, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label13, "恢复默认设置");
-    lv_obj_set_style_text_font(ui_Label13, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label13, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t *ui_Label15 = lv_label_create(parent);
     lv_obj_set_width(ui_Label15, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_Label15, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_Label15, 0);
-    lv_obj_set_y(ui_Label15, 150);
+    lv_obj_set_y(ui_Label15, 160);
     lv_obj_set_align(ui_Label15, LV_ALIGN_TOP_MID);
-    lv_label_set_text(ui_Label15, "原作者：小李电子实验室 修订版：dudu233\n开源协议：GPL 3.0");
+    lv_label_set_text(ui_Label15, "作者：小李电子实验室(原)、mcdudu233(修订)\n开源协议：GPL3.0");
     lv_obj_set_style_text_color(ui_Label15, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_Label15, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label15, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label15, &ui_font_chinese_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_group_focus_obj(ui_Button1);
 

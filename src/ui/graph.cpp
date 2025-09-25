@@ -57,7 +57,7 @@ public:
             }
             lbl_title = lv_label_create(_chart_widget);
 
-            lv_obj_set_style_text_font(lbl_title, &ui_font_chinese16, 0);
+            lv_obj_set_style_text_font(lbl_title, &ui_font_chinese_16, 0);
             lv_label_set_text(lbl_title, title);
             lv_obj_set_style_bg_color(lbl_title, lv_palette_main(LV_PALETTE_BLUE_GREY), 0);
             lv_obj_set_style_bg_opa(lbl_title, LV_OPA_30, 0);

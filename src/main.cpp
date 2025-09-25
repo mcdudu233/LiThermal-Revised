@@ -65,7 +65,6 @@ void *thread_app_func(void *)
 }
 
 #include <chrono>
-#include <iostream>
 // 热成像温度更新线程 5HZ
 pthread_t thread_temperature;
 void *thread_temperature_func(void *){

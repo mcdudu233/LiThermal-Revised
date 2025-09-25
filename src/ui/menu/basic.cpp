@@ -10,7 +10,7 @@ static void card_settings_disp(lv_obj_t *ui_Panel1)
     lv_obj_set_y(ui_Panel1, 48);
 */
     lv_obj_clear_flag(ui_Panel1, LV_OBJ_FLAG_SCROLLABLE); /// Flags
-    lv_obj_set_style_text_font(ui_Panel1, &ui_font_chinese16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Panel1, &ui_font_chinese_16, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_t *ui_Checkbox2 = lv_checkbox_create(ui_Panel1);
     lv_checkbox_set_text(ui_Checkbox2, "最大值");
     lv_obj_set_width(ui_Checkbox2, LV_SIZE_CONTENT);  /// 1

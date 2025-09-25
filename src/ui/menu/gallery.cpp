@@ -369,7 +369,7 @@ void createDeleteButton(lv_obj_t *parent)
     lv_obj_align(button, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
     lv_obj_set_style_bg_color(button, lv_color_hex(0xf44336), 0);
     lv_obj_t *label = lv_label_create(button);
-    lv_obj_set_style_text_font(label, &ui_font_ali24, 0);
+    lv_obj_set_style_text_font(label, &ui_font_chinese_16, 0);
     lv_label_set_text(label, "删除");
     lv_obj_set_align(label, LV_ALIGN_RIGHT_MID);
     lv_obj_fade_in(button, 300, 0);
