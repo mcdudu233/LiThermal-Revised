@@ -41,7 +41,7 @@ uint64_t getTimeStampUS()
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000L + tv.tv_usec / 1000L;
+    return tv.tv_sec * 1000000L + tv.tv_usec;
 }
 
 #define STATE_IDLE 1
@@ -56,6 +56,8 @@ void *thread_refresh_image(void *)
     static int err_count = 0;
     sem_wait(&sem_video);
     usleep(500 * 1000);
+    // uint64_t start = getTimeStampUS();
+    // int fps = 0;
     while (1)
     {
         switch (thread_video_command)
@@ -124,6 +126,15 @@ void *thread_refresh_image(void *)
         case STATE_PLAYING:
         {
             // printf("[TRACE] Playing begin\n");
+            // uint64_t end = getTimeStampUS();
+            // uint64_t last = end - start;
+            // if (last > 1000 * 1000)
+            // {
+            //     printf("[TRACE] Frame processing time exceeded 1 second: %d \n", fps); 
+            //     start = end;
+            //     fps = 0;
+            // }
+            // fps++;
             auto frame = codec_getFrame();
             if (frame == NULL)
             {
@@ -150,7 +161,8 @@ void *thread_refresh_image(void *)
             }
             lv_obj_invalidate(videoPlayer.img_obj);
             UNLOCKLV();
-            usleep(20000);
+            
+            usleep(1 * 1000);
             sem_trywait(&sem_video);
         }
         break;

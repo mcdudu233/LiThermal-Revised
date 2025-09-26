@@ -64,26 +64,54 @@ void *thread_app_func(void *)
     return NULL;
 }
 
-#include <chrono>
-// 热成像温度更新线程 5HZ
+#include <sys/time.h>
+uint64_t getTimeUS()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000L + tv.tv_usec;
+}
+// 热成像温度更新线程 5HZ~10HZ
 pthread_t thread_temperature;
 void *thread_temperature_func(void *){
     while (cameraUtils.connected == false)
         usleep(50000);
+    int wait = 100;
+    // uint64_t fps_start = getTimeUS();
+    // int fps = 0;
     while(1){
-        auto start = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        uint64_t start = getTimeUS();
+        // uint64_t fps_end = getTimeUS();
+        // uint64_t fps_last = fps_end - fps_start;
+        // if (fps_last > 1000 * 1000)
+        // {
+        //     printf("[TRACE] temperature time exceeded 1 second: %d \n", fps); 
+        //     fps_start = fps_end;
+        //     fps = 0;
+        // }
+        // fps++;
         if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
         {
-            if (!globalSettings.use4117Cursors && (globalSettings.enableMinValueDisplay || globalSettings.enableMaxValueDisplay))
+            if (!globalSettings.use4117Cursors)
             {
-                cameraUtils.getTemperature();
+                if (globalSettings.enableMinValueDisplay || globalSettings.enableMaxValueDisplay)
+                {
+                    cameraUtils.getTemperature();
+                    if (globalSettings.enableCenterValueDisplay)
+                    {
+                        wait = 200;
+                    } else
+                    {
+                        wait = 100;
+                    }
+                }
             }
         }
-        auto end = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
-        auto last = end - start;
-        if (last < 200)
+        uint64_t end = getTimeUS();
+        uint64_t last = end - start;
+        if (last < wait * 1000)
         {
-            usleep(200000 - last * 1000);
+            usleep(wait * 1000 - last);
         }
     }
 }
@@ -93,8 +121,19 @@ pthread_t thread_temperature_center;
 void *thread_temperature_center_func(void *){
     while (cameraUtils.connected == false)
         usleep(50000);
+    // uint64_t fps_start = getTimeUS();
+    // int fps = 0;
     while(1){
-        auto start = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+        uint64_t start = getTimeUS();
+        // uint64_t fps_end = getTimeUS();
+        // uint64_t fps_last = fps_end - fps_start;
+        // if (fps_last > 1000 * 1000)
+        // {
+        //     printf("[TRACE] temperature_center time exceeded 1 second: %d \n", fps); 
+        //     fps_start = fps_end;
+        //     fps = 0;
+        // }
+        // fps++;
         if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS)
         {
             if (!globalSettings.use4117Cursors && globalSettings.enableCenterValueDisplay)
@@ -102,11 +141,11 @@ void *thread_temperature_center_func(void *){
                 cameraUtils.getTemperatureCenter();
             }
         }
-        auto end = std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
-        auto last = end - start;
-        if (last < 500)
+        uint64_t end = getTimeUS();
+        uint64_t last = end - start;
+        if (last < 500 * 1000)
         {
-            usleep(500000 - last * 1000);
+            usleep(500 * 1000 - last);
         }
     }
 }
@@ -128,6 +167,8 @@ void port_forward(){
     system("iptables -t nat -X");
     system("iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j DNAT --to 192.168.64.64:80");
     system("iptables -t nat -A POSTROUTING -p tcp -s 127.0.0.1 -d 192.168.64.64 --dport 80 -j SNAT --to 192.168.64.32");
+    system("iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 554 -j DNAT --to 192.168.64.64:554");
+    system("iptables -t nat -A POSTROUTING -p tcp -s 127.0.0.1 -d 192.168.64.64 --dport 554 -j SNAT --to 192.168.64.32");
 }
 
 int main()

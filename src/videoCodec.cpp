@@ -190,7 +190,7 @@ void codec_enablePacketDumping(bool en, const char *dump_target)
 AVFrame *codec_getFrame()
 {
     int ret;
-    while (av_read_frame(input_ctx, packet) >= 0)
+    if (av_read_frame(input_ctx, packet) >= 0)
     {
         if (packet->stream_index == video_stream_index)
         {
@@ -207,7 +207,7 @@ AVFrame *codec_getFrame()
             if (ret < 0)
             {
                 fprintf(stderr, "Error sending packet for decoding.\n");
-                break;
+                return NULL;
             }
             while (ret >= 0)
             {
