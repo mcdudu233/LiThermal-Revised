@@ -83,7 +83,7 @@ void camera_record_toggle_dump_stream()
             return;
         }
         cameraUtils.readJpegWithExtra(name_partial);
-        sprintf(file_name_buffer, "%s.mjpeg", name_partial);
+        sprintf(file_name_buffer, "%s.mp4", name_partial);
         codec_enablePacketDumping(true, file_name_buffer);
         sprintf(file_name_buffer, "%s.raw", name_partial);
         remove(file_name_buffer); // 避免识别成照片
