@@ -1,2 +1,9 @@
-build/tmp
-build/UDISK
+.vscode/**
+.idea/**
+cmake-build-debug/**
+cmake-build-release/**
+
+build/build/**
+build/UDISK/**
+build/target/**
+build/toolchain-sunxi-musl/**
