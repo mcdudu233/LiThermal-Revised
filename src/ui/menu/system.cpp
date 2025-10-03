@@ -231,6 +231,34 @@ static void card_menu_system_construct(lv_obj_t *parent) {
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
       },
       LV_EVENT_CLICKED, NULL);
+  lv_obj_add_event_cb(
+      ui_list_picture_format,
+      [](lv_event_t *e) {
+        char buf[32];
+        lv_dropdown_get_selected_str(e->target, buf, sizeof(buf));
+        if (strcmp(buf, "JPEG") == 0) {
+          globalSettings.pictureFormat = jpeg;
+        } else if (strcmp(buf, "RAW") == 0) {
+          globalSettings.pictureFormat = raw;
+        } else if (strcmp(buf, "JPEG+RAW") == 0) {
+          globalSettings.pictureFormat = jpeg_raw;
+        }
+      },
+      LV_EVENT_VALUE_CHANGED, NULL);
+  lv_obj_add_event_cb(
+      ui_list_video_format,
+      [](lv_event_t *e) {
+        char buf[32];
+        lv_dropdown_get_selected_str(e->target, buf, sizeof(buf));
+        if (strcmp(buf, "MP4") == 0) {
+          globalSettings.videoFormat = mp4;
+        } else if (strcmp(buf, "MJPEG") == 0) {
+          globalSettings.videoFormat = mjpeg;
+        } else if (strcmp(buf, "MP4+MJPEG") == 0) {
+          globalSettings.videoFormat = mp4_mjpeg;
+        }
+      },
+      LV_EVENT_VALUE_CHANGED, NULL);
   //  lv_obj_add_event_cb(
   //      ui_Button1, [](lv_event_t *e) { cameraUtils.calibrateManually(); },
   //      LV_EVENT_CLICKED, NULL);
@@ -244,6 +272,8 @@ static void card_menu_system_construct(lv_obj_t *parent) {
           settings_save();
           lv_obj_clear_state(ui_checkbox_save_osd, LV_STATE_CHECKED);
           lv_obj_clear_state(ui_switch_buildin_cursor, LV_STATE_CHECKED);
+          lv_dropdown_set_selected(ui_list_picture_format, 2);
+          lv_dropdown_set_selected(ui_list_video_format, 2);
           widget_graph_updateSettings();
           ui_crosshairs_updateVisibility();
         } else {
@@ -276,6 +306,34 @@ static void card_menu_system_construct(lv_obj_t *parent) {
     lv_obj_add_state(ui_checkbox_save_osd, LV_STATE_CHECKED);
   if (globalSettings.useBuildinCursors)
     lv_obj_add_state(ui_switch_buildin_cursor, LV_STATE_CHECKED);
+  switch (globalSettings.pictureFormat) {
+  case jpeg: {
+    lv_dropdown_set_selected(ui_list_picture_format, 0);
+    break;
+  }
+  case raw: {
+    lv_dropdown_set_selected(ui_list_picture_format, 1);
+    break;
+  }
+  case jpeg_raw: {
+    lv_dropdown_set_selected(ui_list_picture_format, 2);
+    break;
+  }
+  }
+  switch (globalSettings.videoFormat) {
+  case mp4: {
+    lv_dropdown_set_selected(ui_list_video_format, 0);
+    break;
+  }
+  case mjpeg: {
+    lv_dropdown_set_selected(ui_list_video_format, 1);
+    break;
+  }
+  case mp4_mjpeg: {
+    lv_dropdown_set_selected(ui_list_video_format, 2);
+    break;
+  }
+  }
 }
 
 void menu_system_show() {

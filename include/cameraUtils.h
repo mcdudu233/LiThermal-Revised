@@ -1,18 +1,18 @@
 #pragma once
+#include "string"
+
 #define CAMERA_HOST_URL "http://192.168.64.64"
 
-typedef struct temperature_point_t
-{
-    float maxTemperature;
-    float minTemperature;
-    float averageTemperature;
-    float centerTemperature;
-    struct
-    {
-        float positionX;
-        float positionY;
-    } MaxTemperaturePoint, MinTemperaturePoint;
-    bool isFreezedata;
+typedef struct temperature_point_t {
+  float maxTemperature;
+  float minTemperature;
+  float averageTemperature;
+  float centerTemperature;
+  struct {
+    float positionX;
+    float positionY;
+  } MaxTemperaturePoint, MinTemperaturePoint;
+  bool isFreezedata;
 } temperature_point_t;
 
 // 摄像头调色板
@@ -38,24 +38,25 @@ typedef struct temperature_point_t
 #define IR_DNR_MODE_CLOSE 0
 #define IR_DNR_MODE_GENERAL 1
 #define IR_DNR_MODE_ADVANCED 2
-class CameraUtils
-{
+class CameraUtils {
 public:
-    temperature_point_t lastResult;
-    float lastCenterTemperature;
-    bool connected = false;
-    bool checkCameraConnection(); // 检查摄像头连接
-    void setCameraIP();           // 设置摄像头固定IP
-    void initHTTPClient();        // 初始化HTTP客户端（即设置HTTP认证）
-    void getTemperature();        // 获取摄像头温度信息
-    void getTemperatureCenter();        // 获取摄像头中心温度信息
-    void setColorPalette(int palette);
-    void setDigitalNoiceReduce(int mode, int frameLevel, int interFrameLevel);
-    void setDigitalDetailEnhancement(bool en, int level);
-    float readJpegWithExtra(const char *save_filename = NULL, int result_x = 160 / 2, int result_y = 120 / 2);
-    void setCenterMeasure(bool en);
-    void calibrateManually();
-    void set4117Cursor(bool min, bool max);
+  temperature_point_t lastResult;
+  float lastCenterTemperature;
+  bool connected = false;
+  bool checkCameraConnection();    // 检查摄像头连接
+  void setCameraIP();              // 设置摄像头固定IP
+  void initHTTPClient();           // 初始化HTTP客户端（即设置HTTP认证）
+  void getTemperature();           // 获取摄像头温度信息
+  std::string getTemperatureAll(); // 获取所有位置的温度
+  float getTemperatureCenter();    // 获取摄像头中心温度信息
+  void setColorPalette(int palette);
+  void setDigitalNoiceReduce(int mode, int frameLevel, int interFrameLevel);
+  void setDigitalDetailEnhancement(bool en, int level);
+  void saveJpegWithExtra(const char *save_filename, bool saveJpeg = true,
+                         bool saveExtra = true);
+  void setCenterMeasure(bool en);
+  void calibrateManually();
+  void set4117Cursor(bool min, bool max);
 };
 
 extern CameraUtils cameraUtils;

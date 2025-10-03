@@ -16,17 +16,42 @@ static void flash_bang_effect() {
 void camera_take_photo_from_stream() {
   if (cameraUtils.connected == false)
     return;
-  if (globalSettings.preserveOSD == false) {
-    cameraUtils.readJpegWithExtra(allocateNewFilename());
-  } else {
-    char data[128];
-    sprintf(data, "%s.jpeg", allocateNewFilename());
-    LOCKLV();
-    lv_img_dsc_t *snapshot =
-        lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
-    tje_encode_to_file(data, 320, 240, 4, snapshot->data);
-    lv_snapshot_free(snapshot);
-    UNLOCKLV();
+  switch (globalSettings.pictureFormat) {
+  case jpeg: {
+    if (globalSettings.preserveOSD) {
+      char data[128];
+      sprintf(data, "%s.jpeg", allocateNewFilename());
+      LOCKLV();
+      lv_img_dsc_t *snapshot =
+          lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
+      tje_encode_to_file(data, 320, 240, 4, snapshot->data);
+      lv_snapshot_free(snapshot);
+      UNLOCKLV();
+    } else {
+      cameraUtils.saveJpegWithExtra(allocateNewFilename(), true, false);
+    }
+    break;
+  }
+  case raw: {
+    cameraUtils.saveJpegWithExtra(allocateNewFilename(), false, true);
+    break;
+  }
+  case jpeg_raw: {
+    if (globalSettings.preserveOSD) {
+      char data[128];
+      sprintf(data, "%s.jpeg", allocateNewFilename());
+      LOCKLV();
+      lv_img_dsc_t *snapshot =
+          lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
+      tje_encode_to_file(data, 320, 240, 4, snapshot->data);
+      lv_snapshot_free(snapshot);
+      UNLOCKLV();
+      cameraUtils.saveJpegWithExtra(allocateNewFilename(), false, true);
+    } else {
+      cameraUtils.saveJpegWithExtra(allocateNewFilename(), true, true);
+    }
+    break;
+  }
   }
   flash_bang_effect();
 }
@@ -60,22 +85,49 @@ void camera_record_toggle_dump_stream() {
     UNLOCKLV();
     codec_enablePacketDumping(false, NULL);
   } else {
-    char file_name_buffer[128];
     const char *name_partial = allocateNewFilename();
     if (name_partial == NULL) {
       // TODO: 添加错误提示
       return;
     }
-    cameraUtils.readJpegWithExtra(name_partial);
-    sprintf(file_name_buffer, "%s.mp4", name_partial);
-    codec_enablePacketDumping(true, file_name_buffer);
-    sprintf(file_name_buffer, "%s.raw", name_partial);
-    remove(file_name_buffer); // 避免识别成照片
+
+    // 保留视频开头截图 用于显示
+    if (globalSettings.preserveOSD) {
+      char data[128];
+      sprintf(data, "%s.jpeg", name_partial);
+      LOCKLV();
+      lv_img_dsc_t *snapshot =
+          lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
+      tje_encode_to_file(data, 320, 240, 4, snapshot->data);
+      lv_snapshot_free(snapshot);
+      UNLOCKLV();
+    } else {
+      cameraUtils.saveJpegWithExtra(name_partial, true, false);
+    }
+
+    // 录制视频
+    switch (globalSettings.videoFormat) {
+    case mp4: {
+      codec_enablePacketDumping(true, name_partial, true, false);
+      break;
+    }
+    case mjpeg: {
+      codec_enablePacketDumping(true, name_partial, false, true);
+      break;
+    }
+    case mp4_mjpeg: {
+      codec_enablePacketDumping(true, name_partial, true, true);
+      break;
+    }
+    }
+
+    // 动画效果
+    LOCKLV();
     lot_rec = lv_rlottie_create_from_raw(lv_layer_top(), 200, 200, lottie_rec);
     lv_obj_center(lot_rec);
     lv_rlottie_set_play_mode(lot_rec, LV_RLOTTIE_CTRL_PLAY);
-    lv_obj_del_delayed(lot_rec, 5000);
-
+    lv_obj_del_delayed(lot_rec, 2000);
+    UNLOCKLV();
     tm_create_circle = lv_timer_create(
         [](lv_timer_t *tm_out) {
           circle_REC = lv_obj_create(lv_layer_top());
@@ -102,6 +154,6 @@ void camera_record_toggle_dump_stream() {
           lv_timer_del(tm_create_circle);
           tm_create_circle = NULL;
         },
-        3000, 0);
+        1800, 0);
   }
 }

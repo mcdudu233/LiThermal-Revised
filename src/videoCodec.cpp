@@ -1,11 +1,13 @@
 #include "videoCodec.h"
 #include <stdio.h>
 AVFormatContext *input_ctx = NULL;
-AVFormatContext *output_ctx = NULL;
+AVFormatContext *output_ctx_mp4 = NULL;
+AVFormatContext *output_ctx_mjpeg = NULL;
 AVCodecContext *encoder_ctx = NULL;
 AVCodecContext *decoder_ctx = NULL;
 AVStream *in_stream = NULL;
-AVStream *out_stream = NULL;
+AVStream *out_stream_mp4 = NULL;
+AVStream *out_stream_mjpeg = NULL;
 struct SwsContext *sws_ctx = NULL;
 struct SwsContext *sws_ctx_yuv = NULL;
 AVPacket *encoded_packet = NULL;
@@ -180,64 +182,105 @@ void codec_closeEverything() {
   }
 }
 
-int openOutputFile(const char *output_file) {
-  openOutputEncoder();
-
+int openOutputFile(const char *output_file, bool saveMp4, bool saveMjpeg) {
   if (in_stream == NULL || decoder_ctx == NULL) {
     fprintf(stderr, "No input stream.\n");
     return -1;
   }
-  avformat_alloc_output_context2(&output_ctx, NULL, "mp4", output_file);
-  if (!output_ctx) {
-    fprintf(stderr, "Could not create output context.\n");
-    return -1;
-  }
 
-  out_stream = avformat_new_stream(output_ctx, NULL);
-  if (!out_stream) {
-    fprintf(stderr, "Failed to allocate output stream.\n");
-    return -1;
-  }
+  char file_name_buffer[128];
 
-  // 使用MPEG4编码器
-  avcodec_parameters_from_context(out_stream->codecpar, encoder_ctx);
-  out_stream->time_base = encoder_ctx->time_base;
-  out_stream->r_frame_rate = encoder_ctx->framerate;
-  out_stream->avg_frame_rate = encoder_ctx->framerate;
-  out_stream->codecpar->bit_rate = encoder_ctx->bit_rate;
+  if (saveMp4) {
+    openOutputEncoder();
 
-  // 设置流的编解码器标签
-  if (output_ctx->oformat->flags & AVFMT_GLOBALHEADER) {
-    encoder_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-  }
-  av_dict_set(&out_stream->metadata, "handler_name", "VideoHandler", 0);
+    sprintf(file_name_buffer, "%s.mp4", output_file);
+    avformat_alloc_output_context2(&output_ctx_mp4, NULL, "mp4",
+                                   file_name_buffer);
+    if (!output_ctx_mp4) {
+      fprintf(stderr, "Could not create output context.\n");
+      return -1;
+    }
 
-  // 打开输出文件并写入文件头
-  if (!(output_ctx->oformat->flags & AVFMT_NOFILE)) {
-    if (avio_open(&output_ctx->pb, output_file, AVIO_FLAG_WRITE) < 0) {
-      fprintf(stderr, "Could not open output file: %s\n", output_file);
+    out_stream_mp4 = avformat_new_stream(output_ctx_mp4, NULL);
+    if (!out_stream_mp4) {
+      fprintf(stderr, "Failed to allocate output stream.\n");
+      return -1;
+    }
+
+    // 使用MPEG4编码器
+    avcodec_parameters_from_context(out_stream_mp4->codecpar, encoder_ctx);
+    out_stream_mp4->time_base = encoder_ctx->time_base;
+    out_stream_mp4->r_frame_rate = encoder_ctx->framerate;
+    out_stream_mp4->avg_frame_rate = encoder_ctx->framerate;
+    out_stream_mp4->codecpar->bit_rate = encoder_ctx->bit_rate;
+
+    // 设置流的编解码器标签
+    if (output_ctx_mp4->oformat->flags & AVFMT_GLOBALHEADER) {
+      encoder_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    }
+    av_dict_set(&out_stream_mp4->metadata, "handler_name", "VideoHandler", 0);
+
+    // 打开输出文件并写入文件头
+    if (!(output_ctx_mp4->oformat->flags & AVFMT_NOFILE)) {
+      if (avio_open(&output_ctx_mp4->pb, file_name_buffer, AVIO_FLAG_WRITE) <
+          0) {
+        fprintf(stderr, "Could not open output file: %s\n", file_name_buffer);
+        return -1;
+      }
+    }
+    if (avformat_write_header(output_ctx_mp4, NULL) < 0) {
+      fprintf(stderr, "Error occurred when writing header.\n");
       return -1;
     }
   }
-  if (avformat_write_header(output_ctx, NULL) < 0) {
-    fprintf(stderr, "Error occurred when writing header.\n");
-    return -1;
+
+  if (saveMjpeg) {
+    sprintf(file_name_buffer, "%s.mjpeg", output_file);
+    avformat_alloc_output_context2(&output_ctx_mjpeg, NULL, NULL,
+                                   file_name_buffer);
+    if (!output_ctx_mjpeg) {
+      fprintf(stderr, "Could not create output context.\n");
+      return -1;
+    }
+    out_stream_mjpeg = avformat_new_stream(output_ctx_mjpeg, NULL);
+    if (!out_stream_mjpeg) {
+      fprintf(stderr, "Failed to allocate output stream.\n");
+      return -1;
+    }
+
+    out_stream_mjpeg->time_base = in_stream->time_base; // 设置输出流时基
+    avcodec_parameters_from_context(out_stream_mjpeg->codecpar,
+                                    decoder_ctx); // 直接写入数据包
+
+    // 打开输出文件并写入文件头
+    if (!(output_ctx_mjpeg->oformat->flags & AVFMT_NOFILE)) {
+      if (avio_open(&output_ctx_mjpeg->pb, file_name_buffer, AVIO_FLAG_WRITE) <
+          0) {
+        fprintf(stderr, "Could not open output file.\n");
+        return -1;
+      }
+    }
+    if (avformat_write_header(output_ctx_mjpeg, NULL) < 0) {
+      fprintf(stderr, "Error occurred when writing header.\n");
+      return -1;
+    }
   }
 
   return 0;
 }
 
-void codec_enablePacketDumping(bool en, const char *dump_target) {
+void codec_enablePacketDumping(bool en, const char *dump_target, bool saveMp4,
+                               bool saveMjpeg) {
   if (packet_dumping != en) {
     LOCKRECORDER();
     packet_dumping = en;
     UNLOCKRECORDER();
-    if (packet_dumping == true) // 打开
+    if (packet_dumping) // 打开
     {
-      openOutputFile(dump_target);
+      openOutputFile(dump_target, saveMp4, saveMjpeg);
       isFirstPTS = true;
     } else {
-      if (output_ctx != NULL) {
+      if (output_ctx_mp4 != NULL) {
         int ret;
 
         if (encoder_ctx != NULL) {
@@ -247,7 +290,7 @@ void codec_enablePacketDumping(bool en, const char *dump_target) {
           }
 
           // 接收所有剩余包
-          while (1) {
+          while (true) {
             ret = avcodec_receive_packet(encoder_ctx, encoded_packet);
             if (ret == AVERROR_EOF) {
               break;
@@ -262,30 +305,40 @@ void codec_enablePacketDumping(bool en, const char *dump_target) {
             // 写入剩余包
             if (encoded_packet->size > 0) {
               av_packet_rescale_ts(encoded_packet, decoder_ctx->time_base,
-                                   out_stream->time_base);
-              encoded_packet->stream_index = out_stream->index;
+                                   out_stream_mp4->time_base);
+              encoded_packet->stream_index = out_stream_mp4->index;
 
               encoded_packet->pos = -1;
-              av_interleaved_write_frame(output_ctx, encoded_packet);
+              av_interleaved_write_frame(output_ctx_mp4, encoded_packet);
             }
             av_packet_unref(encoded_packet);
           }
         }
 
         // 关闭文件
-        if (!(output_ctx->oformat->flags & AVFMT_NOFILE)) {
-          ret = av_write_trailer(output_ctx);
+        if (!(output_ctx_mp4->oformat->flags & AVFMT_NOFILE)) {
+          ret = av_write_trailer(output_ctx_mp4);
           if (ret < 0) {
             fprintf(stderr, "Error writing trailer: %d\n", ret);
           }
-          avio_closep(&output_ctx->pb);
+          avio_closep(&output_ctx_mp4->pb);
         }
 
+        out_stream_mp4 = NULL;
+        avformat_free_context(output_ctx_mp4);
+        output_ctx_mp4 = NULL;
         avcodec_free_context(&encoder_ctx);
-        avformat_free_context(output_ctx);
         encoder_ctx = NULL;
-        output_ctx = NULL;
-        out_stream = NULL;
+      }
+      if (output_ctx_mjpeg != NULL) {
+        if (!(output_ctx_mjpeg->oformat->flags & AVFMT_NOFILE)) {
+          av_write_frame(output_ctx_mjpeg, packet);
+          avio_closep(&output_ctx_mjpeg->pb);
+          av_write_trailer(output_ctx_mjpeg);
+        }
+        out_stream_mjpeg = NULL;
+        avformat_free_context(output_ctx_mjpeg);
+        output_ctx_mjpeg = NULL;
       }
     }
   }
@@ -313,59 +366,66 @@ AVFrame *codec_getFrame() {
 
         // 进行MPEG4编码
         LOCKRECORDER();
-        if (packet_dumping && output_ctx != NULL && encoder_ctx != NULL) {
-          // 转换到YUV420P格式（MPEG4编码需要）
-          if (!sws_ctx_yuv) {
-            sws_ctx_yuv = sws_getContext(
-                frame->width, frame->height, (enum AVPixelFormat)frame->format,
-                frame->width, frame->height, AV_PIX_FMT_YUV420P, SWS_BILINEAR,
-                NULL, NULL, NULL);
+        if (packet_dumping) {
+          if (output_ctx_mp4 != NULL && encoder_ctx != NULL) {
+            // 转换到YUV420P格式（MPEG4编码需要）
             if (!sws_ctx_yuv) {
-              fprintf(stderr, "Could not create YUV scale context.\n");
-            }
-          }
-
-          AVFrame *yuv_frame = av_frame_alloc();
-          yuv_frame->format = AV_PIX_FMT_YUV420P;
-          yuv_frame->width = frame->width;
-          yuv_frame->height = frame->height;
-          av_frame_get_buffer(yuv_frame, 0);
-          sws_scale(sws_ctx_yuv, (const uint8_t *const *)frame->data,
-                    frame->linesize, 0, frame->height, yuv_frame->data,
-                    yuv_frame->linesize);
-          if (isFirstPTS) {
-            isFirstPTS = false;
-            firstPTS = frame->pts;
-            yuv_frame->pts = 0;
-          } else {
-            yuv_frame->pts = frame->pts - firstPTS;
-          }
-
-          // 编码帧
-          ret = avcodec_send_frame(encoder_ctx, yuv_frame);
-          if (ret < 0) {
-            fprintf(stderr, "Error sending frame to encoder. (code %d)\n", ret);
-          } else {
-            while (ret >= 0) {
-              ret = avcodec_receive_packet(encoder_ctx, encoded_packet);
-              if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                break;
-              else if (ret < 0) {
-                fprintf(stderr, "Error during encoding.\n");
-                break;
+              sws_ctx_yuv = sws_getContext(frame->width, frame->height,
+                                           (enum AVPixelFormat)frame->format,
+                                           frame->width, frame->height,
+                                           AV_PIX_FMT_YUV420P, SWS_BILINEAR,
+                                           NULL, NULL, NULL);
+              if (!sws_ctx_yuv) {
+                fprintf(stderr, "Could not create YUV scale context.\n");
               }
-
-              // 写入编码后的数据包
-              av_packet_rescale_ts(encoded_packet, decoder_ctx->time_base,
-                                   out_stream->time_base);
-              encoded_packet->stream_index = out_stream->index;
-              encoded_packet->pos = -1;
-              av_interleaved_write_frame(output_ctx, encoded_packet);
-              av_packet_unref(encoded_packet);
             }
-          }
 
-          av_frame_free(&yuv_frame);
+            AVFrame *yuv_frame = av_frame_alloc();
+            yuv_frame->format = AV_PIX_FMT_YUV420P;
+            yuv_frame->width = frame->width;
+            yuv_frame->height = frame->height;
+            av_frame_get_buffer(yuv_frame, 0);
+            sws_scale(sws_ctx_yuv, (const uint8_t *const *)frame->data,
+                      frame->linesize, 0, frame->height, yuv_frame->data,
+                      yuv_frame->linesize);
+            if (isFirstPTS) {
+              isFirstPTS = false;
+              firstPTS = frame->pts;
+              yuv_frame->pts = 0;
+            } else {
+              yuv_frame->pts = frame->pts - firstPTS;
+            }
+
+            // 编码帧
+            ret = avcodec_send_frame(encoder_ctx, yuv_frame);
+            if (ret < 0) {
+              fprintf(stderr, "Error sending frame to encoder. (code %d)\n",
+                      ret);
+            } else {
+              while (ret >= 0) {
+                ret = avcodec_receive_packet(encoder_ctx, encoded_packet);
+                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                  break;
+                else if (ret < 0) {
+                  fprintf(stderr, "Error during encoding.\n");
+                  break;
+                }
+
+                // 写入编码后的数据包
+                av_packet_rescale_ts(encoded_packet, decoder_ctx->time_base,
+                                     out_stream_mp4->time_base);
+                encoded_packet->stream_index = out_stream_mp4->index;
+                encoded_packet->pos = -1;
+                av_interleaved_write_frame(output_ctx_mp4, encoded_packet);
+                av_packet_unref(encoded_packet);
+              }
+            }
+
+            av_frame_free(&yuv_frame);
+          }
+          if (output_ctx_mjpeg != NULL) {
+            av_write_frame(output_ctx_mjpeg, packet);
+          }
         }
         UNLOCKRECORDER();
 

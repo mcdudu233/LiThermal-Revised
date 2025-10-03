@@ -1,15 +1,13 @@
 #pragma once
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
-#include <libswscale/swscale.h>
 #include <libavutil/opt.h>
+#include <libswscale/swscale.h>
 
 #ifdef __cplusplus
 }
@@ -24,9 +22,12 @@ void codec_closeEverything();
  * @param dump_target 转储目标文件
  * @example codec_enablePacketDumping(true, "dump.mjpeg");
  * @example codec_enablePacketDumping(false, NULL);
- * @note 在getFrame时会自动转储获取到的MJPEG数据包，结束录制时调用codec_enablePacketDumping(false, NULL)关闭转储
+ * @note
+ * 在getFrame时会自动转储获取到的MJPEG数据包，结束录制时调用codec_enablePacketDumping(false,
+ * NULL)关闭转储
  */
-void codec_enablePacketDumping(bool en, const char *dump_target);
+void codec_enablePacketDumping(bool en, const char *dump_target,
+                               bool saveMp4 = true, bool saveMjpeg = true);
 /**
  * @brief 获取解码后的帧
  * @return AVFrame* 解码后的帧
