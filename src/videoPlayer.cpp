@@ -130,7 +130,7 @@ void *thread_refresh_image(void *)
             // uint64_t last = end - start;
             // if (last > 1000 * 1000)
             // {
-            //     printf("[TRACE] Frame processing time exceeded 1 second: %d \n", fps); 
+            //     printf("[TRACE] Frame processing time exceeded 1 second: %d \n", fps);
             //     start = end;
             //     fps = 0;
             // }
@@ -161,7 +161,7 @@ void *thread_refresh_image(void *)
             }
             lv_obj_invalidate(videoPlayer.img_obj);
             UNLOCKLV();
-            
+
             usleep(1 * 1000);
             sem_trywait(&sem_video);
         }
