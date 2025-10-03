@@ -1,7 +1,7 @@
 if [ -f /mnt/UDISK/LiThermal ]; then
-	chmod +x /mnt/UDISK/LiThermal
-	chmod +x /mnt/UDISK/BSOD
     while true; do
+        chmod +x /mnt/UDISK/LiThermal
+      	chmod +x /mnt/UDISK/BSOD
         if /mnt/UDISK/LiThermal; then
             echo "[Process exited normally]"
             break;
