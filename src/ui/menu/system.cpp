@@ -22,8 +22,11 @@ static void card_menu_system_construct(lv_obj_t *parent) {
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_t *ui_Panel11 = lv_obj_create(parent);
-  lv_obj_set_width(ui_Panel11, 140);
+  lv_obj_set_style_pad_all(ui_Panel11, 0, 0);
+  lv_obj_set_width(ui_Panel11, 130);
   lv_obj_set_height(ui_Panel11, 42);
+  lv_obj_set_x(ui_Panel11, 0);
+  lv_obj_set_y(ui_Panel11, 0);
   lv_obj_set_style_border_width(ui_Panel11, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel11, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
@@ -36,17 +39,16 @@ static void card_menu_system_construct(lv_obj_t *parent) {
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
   ui_switch_buildin_cursor = lv_switch_create(ui_Panel11);
-  lv_obj_set_width(ui_switch_buildin_cursor, 42);
-  lv_obj_set_height(ui_switch_buildin_cursor, 22);
-  lv_obj_set_x(ui_switch_buildin_cursor, 0);
-  lv_obj_set_y(ui_switch_buildin_cursor, 0);
-  lv_obj_set_align(ui_switch_buildin_cursor, LV_ALIGN_RIGHT_MID);
+  lv_obj_set_width(ui_switch_buildin_cursor, 50);
+  lv_obj_set_height(ui_switch_buildin_cursor, 25);
+  lv_obj_align(ui_switch_buildin_cursor, LV_ALIGN_RIGHT_MID, -6, 0);
   lv_obj_add_flag(ui_switch_buildin_cursor, LV_OBJ_FLAG_EVENT_BUBBLE);
 
   lv_obj_t *ui_Panel5 = lv_obj_create(parent);
-  lv_obj_set_width(ui_Panel5, 140);
+  lv_obj_set_style_pad_all(ui_Panel5, 0, 0);
+  lv_obj_set_width(ui_Panel5, 135);
   lv_obj_set_height(ui_Panel5, 42);
-  lv_obj_set_x(ui_Panel5, 130);
+  lv_obj_set_x(ui_Panel5, 140);
   lv_obj_set_y(ui_Panel5, 0);
   lv_obj_set_style_border_width(ui_Panel5, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel5, LV_OBJ_FLAG_SCROLLABLE); /// Flags
@@ -60,14 +62,13 @@ static void card_menu_system_construct(lv_obj_t *parent) {
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
   ui_checkbox_save_osd = lv_switch_create(ui_Panel5);
-  lv_obj_set_width(ui_checkbox_save_osd, 42);
-  lv_obj_set_height(ui_checkbox_save_osd, 22);
-  lv_obj_set_x(ui_checkbox_save_osd, 0);
-  lv_obj_set_y(ui_checkbox_save_osd, 0);
-  lv_obj_set_align(ui_checkbox_save_osd, LV_ALIGN_RIGHT_MID);
+  lv_obj_set_width(ui_checkbox_save_osd, 50);
+  lv_obj_set_height(ui_checkbox_save_osd, 25);
+  lv_obj_align(ui_checkbox_save_osd, LV_ALIGN_RIGHT_MID, -6, 0);
   lv_obj_add_flag(ui_checkbox_save_osd, LV_OBJ_FLAG_EVENT_BUBBLE);
 
   lv_obj_t *ui_Panel10 = lv_obj_create(parent);
+  lv_obj_set_style_pad_all(ui_Panel10, 0, 0);
   lv_obj_set_width(ui_Panel10, 130);
   lv_obj_set_height(ui_Panel10, 42);
   lv_obj_set_x(ui_Panel10, 0);
@@ -78,7 +79,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_t *ui_Label14 = lv_label_create(ui_Panel10);
   lv_obj_set_width(ui_Label14, LV_SIZE_CONTENT);  /// 1
   lv_obj_set_height(ui_Label14, LV_SIZE_CONTENT); /// 1
-  lv_obj_set_align(ui_Label14, LV_ALIGN_LEFT_MID);
+  lv_obj_align(ui_Label14, LV_ALIGN_LEFT_MID, 0, 0);
   lv_label_set_text(ui_Label14, "图片");
   lv_obj_set_style_text_font(ui_Label14, &ui_font_chinese_16,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -86,14 +87,15 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   ui_list_picture_format = lv_dropdown_create(ui_Panel10);
   lv_dropdown_set_options(ui_list_picture_format, "JPEG\n"
                                                   "RAW\n"
-                                                  "JPEG+RAW");
-  lv_obj_set_width(ui_list_picture_format, 70);
+                                                  "JPG+RAW");
+  lv_obj_set_width(ui_list_picture_format, 90);
   lv_obj_set_height(ui_list_picture_format, 35);
-  lv_obj_align(ui_list_picture_format, LV_ALIGN_RIGHT_MID, 10, 0);
+  lv_obj_align(ui_list_picture_format, LV_ALIGN_RIGHT_MID, -3, 0);
   lv_obj_set_style_text_font(ui_list_picture_format, &lv_font_montserrat_12,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_t *ui_Panel12 = lv_obj_create(parent);
+  lv_obj_set_style_pad_all(ui_Panel12, 0, 0);
   lv_obj_set_width(ui_Panel12, 130);
   lv_obj_set_height(ui_Panel12, 42);
   lv_obj_set_x(ui_Panel12, 140);
@@ -112,10 +114,10 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   ui_list_video_format = lv_dropdown_create(ui_Panel12);
   lv_dropdown_set_options(ui_list_video_format, "MP4\n"
                                                 "MJPEG\n"
-                                                "MP4+MJPEG");
-  lv_obj_set_width(ui_list_video_format, 70);
+                                                "MP4+MJPG");
+  lv_obj_set_width(ui_list_video_format, 90);
   lv_obj_set_height(ui_list_video_format, 35);
-  lv_obj_align(ui_list_video_format, LV_ALIGN_RIGHT_MID, 10, 0);
+  lv_obj_align(ui_list_video_format, LV_ALIGN_RIGHT_MID, -3, 0);
   lv_obj_set_style_text_font(ui_list_video_format, &lv_font_montserrat_12,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -340,6 +342,7 @@ void menu_system_show() {
   mycardMenuSystem.create(lv_layer_top(), 0, MENU_SYSTEM_CARD_POS_Y,
                           MENU_SYSTEM_CARD_WIDTH, MENU_SYSTEM_CARD_HEIGHT,
                           LV_ALIGN_TOP_MID);
+  lv_obj_set_style_pad_all(mycardMenuSystem.obj, 15, 0);
   card_menu_system_construct(mycardMenuSystem.obj);
   lv_group_focus_obj(lv_obj_get_child(mycardMenuSystem.obj, 0));
   mycardMenuSystem.show(CARD_ANIM_FLY_UP);

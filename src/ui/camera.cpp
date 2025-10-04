@@ -38,15 +38,16 @@ void camera_take_photo_from_stream() {
   }
   case jpeg_raw: {
     if (globalSettings.preserveOSD) {
+      const char *file_name = allocateNewFilename();
       char data[128];
-      sprintf(data, "%s.jpeg", allocateNewFilename());
+      sprintf(data, "%s.jpeg", file_name);
       LOCKLV();
       lv_img_dsc_t *snapshot =
           lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
       tje_encode_to_file(data, 320, 240, 4, snapshot->data);
       lv_snapshot_free(snapshot);
       UNLOCKLV();
-      cameraUtils.saveJpegWithExtra(allocateNewFilename(), false, true);
+      cameraUtils.saveJpegWithExtra(file_name, false, true);
     } else {
       cameraUtils.saveJpegWithExtra(allocateNewFilename(), true, true);
     }
