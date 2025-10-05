@@ -108,7 +108,9 @@ static void raw_to_grayscale(const std::string &raw_data, lv_color_t *buffer) {
 
 /// @brief 渲染图像/视频缩略图到canvas
 /// @param obj_id 对应canvas在image_obj中的位置
-extern "C" const lv_img_dsc_t clapperboard;
+extern "C" const lv_img_dsc_t video;
+extern "C" const lv_img_dsc_t image;
+extern "C" const lv_img_dsc_t imageraw;
 static void image_obj_render(int obj_id) {
   if (image_src_id[obj_id] < 0)
     return;
@@ -121,6 +123,8 @@ static void image_obj_render(int obj_id) {
   case PHOTO_TYPE_PICTURE_JPEG: {
     canvas_draw_dsc.zoom = 192;
     lv_canvas_draw_img(obj_canvas, 0, 0, filename_buffer, &canvas_draw_dsc);
+    canvas_draw_dsc.zoom = 256;
+    lv_canvas_draw_img(obj_canvas, 10, 10, &image, &canvas_draw_dsc);
     break;
   }
   case PHOTO_TYPE_PICTURE_RAW: {
@@ -146,6 +150,8 @@ static void image_obj_render(int obj_id) {
         canvas_draw_dsc.zoom = 384;
         lv_canvas_draw_img(obj_canvas, 0, 0, &raw_image_dsc[obj_id],
                            &canvas_draw_dsc);
+        canvas_draw_dsc.zoom = 256;
+        lv_canvas_draw_img(obj_canvas, 10, 10, &imageraw, &canvas_draw_dsc);
       } else {
         printf("Failed to read RAW file: %s (read %zu, expected %ld)\n",
                filename_buffer, bytes_read, file_size);
@@ -160,7 +166,7 @@ static void image_obj_render(int obj_id) {
     canvas_draw_dsc.zoom = 128 * 3;
     lv_canvas_draw_img(obj_canvas, 0, 0, filename_buffer, &canvas_draw_dsc);
     canvas_draw_dsc.zoom = 256;
-    lv_canvas_draw_img(obj_canvas, 10, 10, &clapperboard, &canvas_draw_dsc);
+    lv_canvas_draw_img(obj_canvas, 10, 10, &video, &canvas_draw_dsc);
     break;
   }
   }
