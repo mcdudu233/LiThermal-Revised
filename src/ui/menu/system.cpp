@@ -236,28 +236,38 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_add_event_cb(
       ui_list_picture_format,
       [](lv_event_t *e) {
-        char buf[32];
-        lv_dropdown_get_selected_str(e->target, buf, sizeof(buf));
-        if (strcmp(buf, "JPEG") == 0) {
+        switch (lv_dropdown_get_selected(e->target)) {
+        case 0: {
           globalSettings.pictureFormat = jpeg;
-        } else if (strcmp(buf, "RAW") == 0) {
+          break;
+        }
+        case 1: {
           globalSettings.pictureFormat = raw;
-        } else if (strcmp(buf, "JPEG+RAW") == 0) {
+          break;
+        }
+        case 2: {
           globalSettings.pictureFormat = jpeg_raw;
+          break;
+        }
         }
       },
       LV_EVENT_VALUE_CHANGED, NULL);
   lv_obj_add_event_cb(
       ui_list_video_format,
       [](lv_event_t *e) {
-        char buf[32];
-        lv_dropdown_get_selected_str(e->target, buf, sizeof(buf));
-        if (strcmp(buf, "MP4") == 0) {
+        switch (lv_dropdown_get_selected(e->target)) {
+        case 0: {
           globalSettings.videoFormat = mp4;
-        } else if (strcmp(buf, "MJPEG") == 0) {
+          break;
+        }
+        case 1: {
           globalSettings.videoFormat = mjpeg;
-        } else if (strcmp(buf, "MP4+MJPEG") == 0) {
+          break;
+        }
+        case 2: {
           globalSettings.videoFormat = mp4_mjpeg;
+          break;
+        }
         }
       },
       LV_EVENT_VALUE_CHANGED, NULL);
