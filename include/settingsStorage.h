@@ -18,6 +18,7 @@ typedef struct settingsStorage_t {
   uint32_t enableCenterValueDisplay;
   uint32_t preserveOSD;
   uint32_t useBuildinCursors;
+  uint32_t displayBattery;
 
   uint32_t pictureFormat;
   uint32_t videoFormat;

@@ -7,8 +7,9 @@ static MyCard mycardMenuSystem;
 static int factory_reset_cnt;
 static lv_obj_t *ui_list_picture_format;
 static lv_obj_t *ui_list_video_format;
-static lv_obj_t *ui_checkbox_save_osd;
+static lv_obj_t *ui_switch_save_osd;
 static lv_obj_t *ui_switch_buildin_cursor;
+static lv_obj_t *ui_switch_display_battery;
 static void card_menu_system_construct(lv_obj_t *parent) {
   factory_reset_cnt = 3;
   // ui_Panel2 = lv_obj_create(ui_Screen4);
@@ -24,9 +25,9 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_t *ui_Panel11 = lv_obj_create(parent);
   lv_obj_set_style_pad_all(ui_Panel11, 0, 0);
   lv_obj_set_width(ui_Panel11, 130);
-  lv_obj_set_height(ui_Panel11, 42);
+  lv_obj_set_height(ui_Panel11, 40);
   lv_obj_set_x(ui_Panel11, 0);
-  lv_obj_set_y(ui_Panel11, 0);
+  lv_obj_set_y(ui_Panel11, -10);
   lv_obj_set_style_border_width(ui_Panel11, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel11, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
@@ -47,9 +48,9 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_t *ui_Panel5 = lv_obj_create(parent);
   lv_obj_set_style_pad_all(ui_Panel5, 0, 0);
   lv_obj_set_width(ui_Panel5, 135);
-  lv_obj_set_height(ui_Panel5, 42);
+  lv_obj_set_height(ui_Panel5, 40);
   lv_obj_set_x(ui_Panel5, 140);
-  lv_obj_set_y(ui_Panel5, 0);
+  lv_obj_set_y(ui_Panel5, -10);
   lv_obj_set_style_border_width(ui_Panel5, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel5, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
@@ -61,18 +62,41 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_style_text_font(ui_Label18, &ui_font_chinese_16,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
-  ui_checkbox_save_osd = lv_switch_create(ui_Panel5);
-  lv_obj_set_width(ui_checkbox_save_osd, 50);
-  lv_obj_set_height(ui_checkbox_save_osd, 25);
-  lv_obj_align(ui_checkbox_save_osd, LV_ALIGN_RIGHT_MID, -6, 0);
-  lv_obj_add_flag(ui_checkbox_save_osd, LV_OBJ_FLAG_EVENT_BUBBLE);
+  ui_switch_save_osd = lv_switch_create(ui_Panel5);
+  lv_obj_set_width(ui_switch_save_osd, 50);
+  lv_obj_set_height(ui_switch_save_osd, 25);
+  lv_obj_align(ui_switch_save_osd, LV_ALIGN_RIGHT_MID, -6, 0);
+  lv_obj_add_flag(ui_switch_save_osd, LV_OBJ_FLAG_EVENT_BUBBLE);
+
+  lv_obj_t *ui_Panel19 = lv_obj_create(parent);
+  lv_obj_set_style_pad_all(ui_Panel19, 0, 0);
+  lv_obj_set_width(ui_Panel19, 275);
+  lv_obj_set_height(ui_Panel19, 38);
+  lv_obj_set_x(ui_Panel19, 0);
+  lv_obj_set_y(ui_Panel19, 26);
+  lv_obj_set_style_border_width(ui_Panel19, LV_STATE_DEFAULT, 0);
+  lv_obj_clear_flag(ui_Panel19, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+
+  lv_obj_t *ui_Label20 = lv_label_create(ui_Panel19);
+  lv_obj_set_width(ui_Label20, LV_SIZE_CONTENT);  /// 1
+  lv_obj_set_height(ui_Label20, LV_SIZE_CONTENT); /// 1
+  lv_obj_align(ui_Label20, LV_ALIGN_LEFT_MID, 0, 0);
+  lv_label_set_text(ui_Label20, "始终在主界面显示剩余电量");
+  lv_obj_set_style_text_font(ui_Label20, &ui_font_chinese_16,
+                             LV_PART_MAIN | LV_STATE_DEFAULT);
+
+  ui_switch_display_battery = lv_switch_create(ui_Panel19);
+  lv_obj_set_width(ui_switch_display_battery, 50);
+  lv_obj_set_height(ui_switch_display_battery, 25);
+  lv_obj_align(ui_switch_display_battery, LV_ALIGN_RIGHT_MID, -6, 0);
+  lv_obj_add_flag(ui_switch_display_battery, LV_OBJ_FLAG_EVENT_BUBBLE);
 
   lv_obj_t *ui_Panel10 = lv_obj_create(parent);
   lv_obj_set_style_pad_all(ui_Panel10, 0, 0);
   lv_obj_set_width(ui_Panel10, 130);
   lv_obj_set_height(ui_Panel10, 42);
   lv_obj_set_x(ui_Panel10, 0);
-  lv_obj_set_y(ui_Panel10, 45);
+  lv_obj_set_y(ui_Panel10, 65);
   lv_obj_set_style_border_width(ui_Panel10, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel10, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
@@ -99,7 +123,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_Panel12, 130);
   lv_obj_set_height(ui_Panel12, 42);
   lv_obj_set_x(ui_Panel12, 140);
-  lv_obj_set_y(ui_Panel12, 45);
+  lv_obj_set_y(ui_Panel12, 65);
   lv_obj_set_style_border_width(ui_Panel12, LV_STATE_DEFAULT, 0);
   lv_obj_clear_flag(ui_Panel12, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
@@ -144,7 +168,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_button_default, 120);
   lv_obj_set_height(ui_button_default, 40);
   lv_obj_set_x(ui_button_default, 0);
-  lv_obj_set_y(ui_button_default, 100);
+  lv_obj_set_y(ui_button_default, 115);
   lv_obj_add_flag(ui_button_default, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_button_default, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
   lv_obj_set_style_bg_color(ui_button_default, lv_color_hex(0xF44336),
@@ -164,7 +188,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_button_shutdown, 70);
   lv_obj_set_height(ui_button_shutdown, 40);
   lv_obj_set_x(ui_button_shutdown, 125);
-  lv_obj_set_y(ui_button_shutdown, 100);
+  lv_obj_set_y(ui_button_shutdown, 115);
   lv_obj_add_flag(ui_button_shutdown, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_button_shutdown, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
   lv_obj_set_style_bg_color(ui_button_shutdown, lv_color_hex(0x238A22),
@@ -184,7 +208,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_button_restart, 70);
   lv_obj_set_height(ui_button_restart, 40);
   lv_obj_set_x(ui_button_restart, 200);
-  lv_obj_set_y(ui_button_restart, 100);
+  lv_obj_set_y(ui_button_restart, 115);
   lv_obj_add_flag(ui_button_restart, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_button_restart, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
   lv_obj_set_style_bg_color(ui_button_restart, lv_color_hex(0xE28D00),
@@ -220,7 +244,7 @@ static void card_menu_system_construct(lv_obj_t *parent) {
   //  lv_group_focus_obj(ui_Button1);
 
   lv_obj_add_event_cb(
-      ui_checkbox_save_osd,
+      ui_switch_save_osd,
       [](lv_event_t *e) {
         globalSettings.preserveOSD =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
@@ -230,6 +254,13 @@ static void card_menu_system_construct(lv_obj_t *parent) {
       ui_switch_buildin_cursor,
       [](lv_event_t *e) {
         globalSettings.useBuildinCursors =
+            lv_obj_has_state(e->target, LV_STATE_CHECKED);
+      },
+      LV_EVENT_CLICKED, NULL);
+  lv_obj_add_event_cb(
+      ui_switch_display_battery,
+      [](lv_event_t *e) {
+        globalSettings.displayBattery =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
       },
       LV_EVENT_CLICKED, NULL);
@@ -282,8 +313,9 @@ static void card_menu_system_construct(lv_obj_t *parent) {
           lv_label_set_text(lv_obj_get_child(e->target, 0), "已恢复");
           settings_default();
           settings_save();
-          lv_obj_clear_state(ui_checkbox_save_osd, LV_STATE_CHECKED);
+          lv_obj_clear_state(ui_switch_save_osd, LV_STATE_CHECKED);
           lv_obj_clear_state(ui_switch_buildin_cursor, LV_STATE_CHECKED);
+          lv_obj_add_state(ui_switch_display_battery, LV_STATE_CHECKED);
           lv_dropdown_set_selected(ui_list_picture_format, 2);
           lv_dropdown_set_selected(ui_list_video_format, 2);
           widget_graph_updateSettings();
@@ -315,9 +347,11 @@ static void card_menu_system_construct(lv_obj_t *parent) {
       LV_EVENT_CLICKED, NULL);
 
   if (globalSettings.preserveOSD)
-    lv_obj_add_state(ui_checkbox_save_osd, LV_STATE_CHECKED);
+    lv_obj_add_state(ui_switch_save_osd, LV_STATE_CHECKED);
   if (globalSettings.useBuildinCursors)
     lv_obj_add_state(ui_switch_buildin_cursor, LV_STATE_CHECKED);
+  if (globalSettings.displayBattery)
+    lv_obj_add_state(ui_switch_display_battery, LV_STATE_CHECKED);
   switch (globalSettings.pictureFormat) {
   case jpeg: {
     lv_dropdown_set_selected(ui_list_picture_format, 0);

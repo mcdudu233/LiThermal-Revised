@@ -1,96 +1,139 @@
+#include "PowerManager.h"
 #include <my_main.h>
-#define BATTERY_CARD_X 250
+
+#define BATTERY_CARD_X 268
 #define BATTERY_CARD_SHOW_Y -13
 #define BATTERY_CARD_HIDE_Y -43
-#define BATTERY_CARD_WIDTH 56
-#define BATTERY_CARD_WIDTH_CHARGING (56 + 12)
+#define BATTERY_CARD_WIDTH 50
 #define BATTERY_CARD_HEIGHT 33
+
+#define BATTERY_OUTLINE_WIDTH 38  // 电池图标宽度
+#define BATTERY_OUTLINE_HEIGHT 18 // 电池图标高度
+
 extern "C" const lv_img_dsc_t bolt;
 
-static MyCard card_Battery;
-static lv_obj_t *img_bolt = NULL;
+static MyCard cardBattery;
+static lv_obj_t *imgBolt = NULL;
+static lv_obj_t *objBattery = NULL;
 
 static bool expanded = false;
-static void battery_card_construct(lv_obj_t *parent)
-{
-    lv_obj_clear_flag(parent, LV_OBJ_FLAG_SCROLLABLE); /// Flags
-    lv_obj_set_style_bg_opa(parent, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(parent, 0, 0);
-    lv_obj_t *lbl_battery = lv_label_create(parent);
-    lv_obj_set_align(lbl_battery, LV_ALIGN_TOP_LEFT);
-    lv_obj_set_x(lbl_battery, -7);
-    lv_label_set_text(lbl_battery, "0.00V");
-    img_bolt = lv_img_create(parent);
-    lv_img_set_src(img_bolt, &bolt);
-    lv_obj_set_pos(img_bolt, 36, 2);
-    lv_obj_set_style_opa(img_bolt, 0, 0);
+static void battery_card_construct(lv_obj_t *parent) {
+  lv_obj_clear_flag(parent, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+  lv_obj_set_style_bg_opa(parent, LV_OPA_0, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_border_width(parent, 0, 0);
+
+  //  lv_obj_t *lbl_battery = lv_label_create(parent);
+  //  lv_obj_set_align(lbl_battery, LV_ALIGN_TOP_RIGHT);
+  //  lv_obj_set_x(lbl_battery, -7);
+  //  lv_label_set_text(lbl_battery, "0.00V");
+
+  // 电池电量外边框
+  lv_obj_t *objBatteryOutline = lv_obj_create(parent);
+  lv_obj_set_style_border_width(objBatteryOutline, 2, 0);
+  lv_obj_set_style_pad_all(objBatteryOutline, 0, 0);
+  lv_obj_set_style_radius(objBatteryOutline, 8, 0);
+  lv_obj_clear_flag(objBatteryOutline, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_size(objBatteryOutline, BATTERY_OUTLINE_WIDTH,
+                  BATTERY_OUTLINE_HEIGHT);
+  lv_obj_align(objBatteryOutline, LV_ALIGN_TOP_LEFT, 0, 0);
+
+  // 电池电量填充
+  objBattery = lv_obj_create(objBatteryOutline);
+  lv_obj_set_style_outline_width(objBattery, 0, 0);
+  lv_obj_set_style_outline_pad(objBattery, 0, 0);
+  lv_obj_set_style_border_width(objBattery, 0, 0);
+  lv_obj_set_style_bg_color(objBattery, lv_color_hex(0xff0000), 0);
+  lv_obj_set_size(objBattery, BATTERY_OUTLINE_WIDTH,
+                  BATTERY_OUTLINE_HEIGHT - 4);
+  lv_obj_set_style_border_width(objBattery, 0, 0);
+  lv_obj_set_style_radius(objBattery, 8, 0);
+  lv_obj_align(objBattery, LV_ALIGN_LEFT_MID, 0, 0);
+  lv_obj_clear_flag(objBattery, LV_OBJ_FLAG_SCROLLABLE);
+
+  // 电池百分比
+  lv_obj_t *objBatteryLabel = lv_label_create(objBatteryOutline);
+  lv_obj_align(objBatteryLabel, LV_ALIGN_CENTER, 0, 0);
+
+  imgBolt = lv_img_create(parent);
+  lv_obj_set_align(imgBolt, LV_ALIGN_TOP_LEFT);
+  lv_img_set_src(imgBolt, &bolt);
+  lv_obj_set_pos(imgBolt, 13, 2);
+  lv_obj_set_style_opa(imgBolt, 0, 0);
 }
 
-static void battery_card_create()
-{
-    if (card_Battery.obj == NULL || lv_obj_is_valid(card_Battery.obj) == false)
-    {
-        card_Battery.create(lv_layer_sys(), BATTERY_CARD_X, BATTERY_CARD_HIDE_Y, BATTERY_CARD_WIDTH, BATTERY_CARD_HEIGHT, LV_ALIGN_TOP_LEFT);
-        card_Battery.show(CARD_ANIM_NONE);
-        battery_card_construct(card_Battery.obj);
-    }
+static void battery_card_create() {
+  if (cardBattery.obj == NULL || !lv_obj_is_valid(cardBattery.obj)) {
+    cardBattery.create(lv_layer_sys(), BATTERY_CARD_X, BATTERY_CARD_HIDE_Y,
+                       BATTERY_CARD_WIDTH, BATTERY_CARD_HEIGHT,
+                       LV_ALIGN_TOP_LEFT);
+    cardBattery.show(CARD_ANIM_NONE);
+    battery_card_construct(cardBattery.obj);
+  }
 }
 
-void battery_card_check()
-{
-    static int cnt = 0;
-    static bool last_charging = false;
-    if (current_mode == MODE_MAINMENU)
-    {
-        if (expanded == false)
-        {
-            expanded = true;
-            LOCKLV();
-            battery_card_create();
-            card_Battery.move(BATTERY_CARD_X, BATTERY_CARD_SHOW_Y);
-            UNLOCKLV();
-            cnt = 20;
-        }
-        ++cnt;
-        if (cnt >= 20)
-        {
-            int16_t voltage = PowerManager_getBatteryVoltage();
-            if (voltage > 0)
-            {
-                LOCKLV();
-                lv_label_set_text_fmt(lv_obj_get_child(card_Battery.obj, 0), "%d.%02dV", voltage / 1000, voltage % 1000 / 10);
-                UNLOCKLV();
-            }
-            bool charging = PowerManager_isCharging();
-            if (charging != last_charging)
-            {
-                last_charging = charging;
-                if (charging)
-                {
-                    LOCKLV();
-                    card_Battery.size(BATTERY_CARD_WIDTH_CHARGING, BATTERY_CARD_HEIGHT);
-                    lv_obj_fade_in(img_bolt, 500, 0);
-                    UNLOCKLV();
-                }
-                else
-                {
-                    LOCKLV();
-                    card_Battery.size(BATTERY_CARD_WIDTH, BATTERY_CARD_HEIGHT);
-                    lv_obj_fade_out(img_bolt, 300, 0);
-                    UNLOCKLV();
-                }
-            }
-            cnt = 0;
-        }
+void battery_card_check() {
+  static int cnt = 0;
+  static bool last_charging = false;
+  if (globalSettings.displayBattery || current_mode == MODE_MAINMENU) {
+    if (!expanded) {
+      expanded = true;
+      LOCKLV();
+      battery_card_create();
+      cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_SHOW_Y);
+      UNLOCKLV();
+      cnt = 20;
     }
-    else
-    {
-        if (expanded)
-        {
-            expanded = false;
-            LOCKLV();
-            card_Battery.move(BATTERY_CARD_X, BATTERY_CARD_HIDE_Y);
-            UNLOCKLV();
+    ++cnt;
+    if (cnt >= 20) {
+      int16_t voltage = PowerManager_getBatteryVoltage();
+      bool charging = PowerManager_isCharging();
+      if (voltage > 0) {
+        LOCKLV();
+        //        lv_label_set_text_fmt(lv_obj_get_child(cardBattery.obj, 0),
+        //        "%d.%02dV",
+        //                              voltage / 1000, voltage % 1000 / 10);
+        float percent = (voltage / 1000.0 - BATTERY_VOLTAGE_MIN) /
+                        (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) * 100.0;
+        if (percent < 0) {
+          percent = 0;
+        } else if (percent > 100) {
+          percent = 100;
         }
+        // 设置电量颜色
+        if (percent <= 20) {
+          lv_obj_set_style_bg_color(objBattery, lv_color_hex(0xff0000), 0);
+        } else if (percent > 20) {
+          lv_obj_set_style_bg_color(objBattery, lv_color_hex(0x00ff00), 0);
+        }
+        // 修改电量颜色宽度
+        lv_obj_set_width(objBattery, BATTERY_OUTLINE_WIDTH * percent / 100 - 1);
+
+        if (charging != last_charging) {
+          last_charging = charging;
+          if (charging) {
+            lv_obj_fade_in(imgBolt, 500, 0);
+          } else {
+            lv_obj_fade_out(imgBolt, 300, 0);
+          }
+        }
+        lv_obj_t *text = lv_obj_get_child(lv_obj_get_parent(objBattery), -1);
+        if (charging) {
+          // 显示为充电中
+          lv_label_set_text_fmt(text, "");
+        } else {
+          // 修改电池百分比
+          lv_label_set_text_fmt(text, "%d", (int)percent);
+        }
+        UNLOCKLV();
+      }
+      cnt = 0;
     }
+  } else {
+    if (expanded) {
+      expanded = false;
+      LOCKLV();
+      cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_HIDE_Y);
+      UNLOCKLV();
+    }
+  }
 }

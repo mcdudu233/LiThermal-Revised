@@ -133,7 +133,11 @@ void camera_record_toggle_dump_stream() {
         [](lv_timer_t *tm_out) {
           circle_REC = lv_obj_create(lv_layer_top());
           lv_obj_set_size(circle_REC, 8, 8);
-          lv_obj_align(circle_REC, LV_ALIGN_TOP_RIGHT, -8, 8);
+          if (globalSettings.displayBattery) {
+            lv_obj_align(circle_REC, LV_ALIGN_TOP_RIGHT, -46, 4);
+          } else {
+            lv_obj_align(circle_REC, LV_ALIGN_TOP_RIGHT, -4, 4);
+          }
           lv_obj_set_style_radius(circle_REC, LV_RADIUS_CIRCLE, 0);
           lv_obj_set_style_border_width(circle_REC, 0, 0);
           lv_obj_set_style_bg_color(circle_REC, lv_color_hex(0xFF0000), 0);

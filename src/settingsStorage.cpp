@@ -15,6 +15,7 @@ void settings_default() {
   globalSettings.enableCenterValueDisplay = true;
   globalSettings.preserveOSD = false;
   globalSettings.useBuildinCursors = false;
+  globalSettings.displayBattery = true;
   globalSettings.pictureFormat = jpeg_raw;
   globalSettings.videoFormat = mp4_mjpeg;
   globalSettings.__tail = SETTINGS_TAIL;
