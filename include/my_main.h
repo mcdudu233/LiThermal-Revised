@@ -1,39 +1,39 @@
 #pragma once
 // 参数配置
 #define VIDEO_STREAM_URL "rtsp://admin:Ab123456@192.168.64.64"
-#define GALLERY_PATH "/mnt/UDISK/DCIM" // 如需修改存储位置，需同时修改 lv_conf.h: LV_FS_STDIO_PATH
+#define GALLERY_PATH                                                           \
+  "/mnt/UDISK/DCIM" // 如需修改存储位置，需同时修改 lv_conf.h: LV_FS_STDIO_PATH
 // 注意：图像命名格式固定为：CAP+5位数字.[jpeg/mjpeg]
 #define SETTINGS_PATH "/mnt/UDISK/settings.dat"
 // 系统头文件
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <math.h>
 #include <lvgl.h>
+#include <math.h>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 // 用户头文件
-#include "myHAL.h"
-#include "videoPlayer.h"
-#include "videoCodec.h"
 #include "animations.h"
 #include "cameraUtils.h"
-#include "utils/filenameAllocator.h"
+#include "myHAL.h"
+#include "settingsStorage.h" // 设置存储
 #include "ui.h"
-#include "settingsStorage.h"                // 设置存储
+#include "utils/filenameAllocator.h"
+#include "videoCodec.h"
+#include "videoPlayer.h"
 // 字体
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-    extern const lv_font_t ui_font_chinese_14;
-    extern const lv_font_t ui_font_chinese_16;
-    extern const lv_font_t ui_font_chinese_18;
-    extern const lv_font_t ui_font_fontawesome16;
-    extern const lv_font_t ui_font_fontawesome24;
+extern const lv_font_t ui_font_chinese_14;
+extern const lv_font_t ui_font_chinese_16;
+extern const lv_font_t ui_font_chinese_18;
+extern const lv_font_t ui_font_fontawesome16;
+extern const lv_font_t ui_font_fontawesome24;
 #ifdef __cplusplus
 }
 #endif
@@ -53,11 +53,6 @@ int16_t PowerManager_getBatteryVoltage();
 bool PowerManager_isCharging();
 void PowerManager_init();
 void PowerManager_powerOff();
-
-// 背光模块
-void Backlight_init();
-void Backlight_set(int new_backlight);
-void Backlight_step(int direction);
 
 /// @brief 相册事件检查
 /// @param has_hal_go_back_event 如果为true，代表返回（菜单）按键按下

@@ -1,23 +1,11 @@
-#include "PowerManager.h"
-#include <my_main.h>
-
-#define BATTERY_CARD_X 268
-#define BATTERY_CARD_SHOW_Y -13
-#define BATTERY_CARD_HIDE_Y -43
-#define BATTERY_CARD_WIDTH 50
-#define BATTERY_CARD_HEIGHT 33
-
-#define BATTERY_OUTLINE_WIDTH 38  // 电池图标宽度
-#define BATTERY_OUTLINE_HEIGHT 18 // 电池图标高度
-
-extern "C" const lv_img_dsc_t bolt;
+#include "ui/battery.h"
 
 static MyCard cardBattery;
 static lv_obj_t *imgBolt = NULL;
 static lv_obj_t *objBattery = NULL;
 
 static bool expanded = false;
-static void battery_card_construct(lv_obj_t *parent) {
+static void battery_construct(lv_obj_t *parent) {
   lv_obj_clear_flag(parent, LV_OBJ_FLAG_SCROLLABLE); /// Flags
   lv_obj_set_style_bg_opa(parent, LV_OPA_0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_width(parent, 0, 0);
@@ -61,25 +49,27 @@ static void battery_card_construct(lv_obj_t *parent) {
   lv_obj_set_style_opa(imgBolt, 0, 0);
 }
 
-static void battery_card_create() {
+void battery_show() {
   if (cardBattery.obj == NULL || !lv_obj_is_valid(cardBattery.obj)) {
     cardBattery.create(lv_layer_sys(), BATTERY_CARD_X, BATTERY_CARD_HIDE_Y,
                        BATTERY_CARD_WIDTH, BATTERY_CARD_HEIGHT,
                        LV_ALIGN_TOP_LEFT);
     cardBattery.show(CARD_ANIM_NONE);
-    battery_card_construct(cardBattery.obj);
+    battery_construct(cardBattery.obj);
   }
+  cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_SHOW_Y);
 }
 
-void battery_card_check() {
+void battery_hide() { cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_HIDE_Y); }
+
+void battery_loop() {
   static int cnt = 0;
   static bool last_charging = false;
   if (globalSettings.displayBattery || current_mode == MODE_MAINMENU) {
     if (!expanded) {
       expanded = true;
       LOCKLV();
-      battery_card_create();
-      cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_SHOW_Y);
+      battery_show();
       UNLOCKLV();
       cnt = 20;
     }
@@ -132,7 +122,7 @@ void battery_card_check() {
     if (expanded) {
       expanded = false;
       LOCKLV();
-      cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_HIDE_Y);
+      battery_hide();
       UNLOCKLV();
     }
   }

@@ -7,8 +7,6 @@
 #include <unistd.h>
 
 void refresh_poweroff_key(); // 处理关机按钮（左侧第一个按钮），位于poweroff.cpp
-void refresh_menu_key();     // 左侧第二个按钮，button_2.cpp
-void battery_card_check();   // 电池电量刷新，batteryCard.cpp
 
 #define INPUT_DEVICE_ENCODER "/dev/input/event0"
 #define INPUT_DEVICE_KEY "/dev/input/event2"
@@ -118,19 +116,20 @@ static inline void initInputDevices() {
 }
 /// @brief hal线程，如按钮状态刷新
 void *thread_hal_func(void *) {
-  while (1) {
+  while (true) {
     refresh_poweroff_key();
-    if (global_poweroff_request == true) {
+    if (global_poweroff_request) {
       global_poweroff_request = false;
       usleep(500 * 1000);
       PowerManager_powerOff();
     }
 
+    battery_loop();
+    brightness_loop();
+    menu_loop();
+    menu_gallery_loop(false);
+
     if (current_mode == MODE_MAINPAGE) {
-      if (last_encoder_direction != 0) {
-        Backlight_step(last_encoder_direction);
-        last_encoder_direction = 0;
-      }
       if (HAL::key_press_event[2]) {
         // 开始/停止录像
         camera_record_toggle_dump_stream();
@@ -140,19 +139,14 @@ void *thread_hal_func(void *) {
         camera_take_photo_from_stream();
         HAL::key_press_event[3] = false;
       }
-    } else if (current_mode == MODE_GALLERY ||
-               current_mode == MODE_GALLERY_MENU) {
-      // 处理相册操作
-      menu_gallery_loop(false); // false表示没有返回事件
-    } else                      // 清零提取出的编码器变化值
+    } else // 清零提取出的编码器变化值
     {
       last_encoder_direction = 0;
       HAL::key_press_event[2] = false;
       HAL::key_press_event[3] = false;
     }
-    refresh_menu_key();
-    battery_card_check();
-    usleep(25000);
+
+    usleep(10000);
   }
 }
 // 初始化HAL
@@ -199,7 +193,7 @@ void HAL::init() {
   // HAL 线程
   pthread_create(&thread_hal, NULL, thread_hal_func, NULL);
   // 背光初始化
-  Backlight_init();
+  backlight_init();
 }
 // LVGL定时器处理
 void HAL::lv_loop() {

@@ -1,16 +1,14 @@
-#include "my_main.h"
-static MyCard mycardMenuSystem;
+#include "ui/menu/system.h"
 
-#define MENU_SYSTEM_CARD_WIDTH 300
-#define MENU_SYSTEM_CARD_HEIGHT 220
-#define MENU_SYSTEM_CARD_POS_Y 30
+static MyCard mycardMenuSystem;
 static int factory_reset_cnt;
 static lv_obj_t *ui_list_picture_format;
 static lv_obj_t *ui_list_video_format;
 static lv_obj_t *ui_switch_save_osd;
 static lv_obj_t *ui_switch_buildin_cursor;
 static lv_obj_t *ui_switch_display_battery;
-static void card_menu_system_construct(lv_obj_t *parent) {
+
+static void menu_system_construct(lv_obj_t *parent) {
   factory_reset_cnt = 3;
   // ui_Panel2 = lv_obj_create(ui_Screen4);
   // lv_obj_set_width(ui_Panel2, 300);
@@ -387,7 +385,7 @@ void menu_system_show() {
                           MENU_SYSTEM_CARD_WIDTH, MENU_SYSTEM_CARD_HEIGHT,
                           LV_ALIGN_TOP_MID);
   lv_obj_set_style_pad_all(mycardMenuSystem.obj, 15, 0);
-  card_menu_system_construct(mycardMenuSystem.obj);
+  menu_system_construct(mycardMenuSystem.obj);
   lv_group_focus_obj(lv_obj_get_child(mycardMenuSystem.obj, 0));
   mycardMenuSystem.show(CARD_ANIM_FLY_UP);
 }

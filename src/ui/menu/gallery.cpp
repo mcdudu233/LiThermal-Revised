@@ -1,4 +1,7 @@
-#include <my_main.h>
+#include "ui/menu/gallery.h"
+
+MyCard card_gallery;
+gallery_state_t current_state = GALLERY_STATE_LIST;
 
 static lv_obj_t *image_obj[5];
 static lv_color_t canvas_buffer[5][240 * 180];
@@ -10,47 +13,14 @@ static lv_draw_img_dsc_t canvas_draw_dsc;
 lv_obj_t *lbl_fileid = NULL;
 static int totalImages = 0;
 static int centerImageID = 0; // 当前屏幕中间显示的图像在数组中的位置
-typedef enum {
-  GALLERY_STATE_LIST,
-  GALLERY_STATE_FULLSCREEN,
-  GALLERY_STATE_MENU,
-} gallery_state_t;
-#define GALLERY_CARD_SHOW_Y -13
-#define GALLERY_CARD_HIDE_Y -43
-gallery_state_t current_state = GALLERY_STATE_LIST;
-MyCard card_gallery;
 
 static int image_pointer_left = 0; // 左边第一个的位置
 static int image_spare_left = 0;   // 左边空闲出的控件个数
 static const int image_pos_x_lut[4] = {20, 25, 35, 50};
 static const int image_pos_y_lut[4] = {12, 8, 4, 0};
 static const int image_fly_delay_lut[4] = {150, 100, 50, 0};
-#define GALLERY_POS_RIGHT_X 400
-static void opa_anim_cb(void *obj, int32_t v) {
-  lv_obj_set_style_opa((lv_obj_t *)obj, v, 0);
-}
 
-static void lv_anim_opa(lv_obj_t *obj, lv_opa_t opa, uint16_t time,
-                        uint16_t delay) {
-  lv_anim_t a;
-  lv_anim_init(&a);
-  lv_anim_set_var(&a, obj);
-  lv_anim_set_values(&a, lv_obj_get_style_opa(obj, 0), opa);
-  lv_anim_set_exec_cb(&a, opa_anim_cb);
-  lv_anim_set_time(&a, time);
-  lv_anim_set_delay(&a, delay);
-  lv_anim_start(&a);
-}
-
-typedef enum {
-  PHOTO_TYPE_FILE_NOT_FOUND,
-  PHOTO_TYPE_PICTURE_JPEG,
-  PHOTO_TYPE_PICTURE_RAW,
-  PHOTO_TYPE_VIDEO_MP4,
-  PHOTO_TYPE_VIDEO_MJPEG,
-} photo_type_t;
-
-static photo_type_t getPhotoType(int id) {
+static photo_type_t get_type(int id) {
   char filename_buffer[128];
   struct stat s;
 
@@ -106,11 +76,6 @@ static void raw_to_grayscale(const std::string &raw_data, lv_color_t *buffer) {
   }
 }
 
-/// @brief 渲染图像/视频缩略图到canvas
-/// @param obj_id 对应canvas在image_obj中的位置
-extern "C" const lv_img_dsc_t video;
-extern "C" const lv_img_dsc_t image;
-extern "C" const lv_img_dsc_t imageraw;
 static void image_obj_render(int obj_id) {
   if (image_src_id[obj_id] < 0)
     return;
@@ -119,7 +84,7 @@ static void image_obj_render(int obj_id) {
   sprintf(filename_buffer, GALLERY_PATH "/CAP%05d.jpeg", image_src_id[obj_id]);
   lv_obj_t *obj_canvas = lv_obj_get_child(image_obj[obj_id], 0);
   canvas_draw_dsc.antialias = 0;
-  switch (getPhotoType(image_src_id[obj_id])) {
+  switch (get_type(image_src_id[obj_id])) {
   case PHOTO_TYPE_PICTURE_JPEG: {
     canvas_draw_dsc.zoom = 192;
     lv_canvas_draw_img(obj_canvas, 0, 0, filename_buffer, &canvas_draw_dsc);
@@ -308,7 +273,7 @@ static void image_obj_slide_right() {
                GALLERY_POS_RIGHT_X, 0, MY_MOVE_ANIM_DEFAULT_TIME, 0);
   image_pointer_left = spare_obj;
 }
-static void menu_gallery_hide();
+
 // 相当于右滑，但当前显示的照片动画不同
 static void image_obj_del_current() {
   if (image_spare_left > 3)
@@ -391,7 +356,7 @@ lv_obj_t *ffmpeg_fullscreen = NULL;
 lv_img_dsc_t ffmpeg_fullscreen_raw_img_dsc;
 lv_color_t ffmpeg_fullscreen_raw_img_buffer[160 * 120];
 static void full_screen_show(int id) {
-  photo_type_t type = getPhotoType(id);
+  photo_type_t type = get_type(id);
   char file_name_buffer[128];
 
   canvas_draw_dsc.antialias = 1;
@@ -511,7 +476,7 @@ void createDeleteButton(lv_obj_t *parent) {
       },
       LV_EVENT_CLICKED, NULL);
 }
-/////////////////////////////////////////////// 相册功能及相关状态
+
 void menu_gallery_show() {
   readFiles(GALLERY_PATH);
   totalImages = getTotalImages();
@@ -544,7 +509,7 @@ void menu_gallery_show() {
   HAL::key_press_event[3] = false; // 全屏切换按钮事件
 }
 
-static void menu_gallery_hide() {
+void menu_gallery_hide() {
   image_obj_close();
   card_gallery.move(0, GALLERY_CARD_HIDE_Y);
   lv_obj_del_delayed(card_gallery.obj, MY_MOVE_ANIM_DEFAULT_TIME);
@@ -565,88 +530,90 @@ void menu_gallery_loop(bool has_hal_go_back_event) {
       UNLOCKLV();
     }
   }
-  switch (current_state) {
-  case GALLERY_STATE_LIST:
-    if (last_encoder_direction > 0) {
-      LOCKLV();
-      image_obj_slide_right();
-      UNLOCKLV();
-      last_encoder_direction = 0;
-    } else if (last_encoder_direction < 0) {
-      LOCKLV();
-      image_obj_slide_left();
-      UNLOCKLV();
-      last_encoder_direction = 0;
-    }
-    if (HAL::key_press_event[2]) {
+  if (current_mode == MODE_GALLERY || current_mode == MODE_GALLERY_MENU) {
+    switch (current_state) {
+    case GALLERY_STATE_LIST:
+      if (last_encoder_direction > 0) {
+        LOCKLV();
+        image_obj_slide_right();
+        UNLOCKLV();
+        last_encoder_direction = 0;
+      } else if (last_encoder_direction < 0) {
+        LOCKLV();
+        image_obj_slide_left();
+        UNLOCKLV();
+        last_encoder_direction = 0;
+      }
+      if (HAL::key_press_event[2]) {
+        HAL::key_press_event[2] = false;
+        // printf("Gallery menu requested\n");
+        LOCKLV();
+        for (int i = 0; i < 5; ++i) {
+          if (i != ((image_pointer_left + 3 - image_spare_left) % 5)) {
+            if (lv_obj_get_child_cnt(image_obj[i]) >= 2) {
+              lv_obj_t *btn = lv_obj_get_child(image_obj[i], -1);
+              lv_obj_del(btn);
+            }
+          }
+        }
+        createDeleteButton(
+            image_obj[(image_pointer_left + 3 - image_spare_left) % 5]);
+        UNLOCKLV();
+        current_state = GALLERY_STATE_MENU;
+      }
+      if (HAL::key_press_event[3]) {
+        HAL::key_press_event[3] = false;
+        LOCKLV();
+        full_screen_show(
+            image_src_id[(image_pointer_left + 3 - image_spare_left) % 5]);
+        UNLOCKLV();
+      }
+      break;
+    case GALLERY_STATE_FULLSCREEN:
+      if (last_encoder_direction > 0) {
+        // TODO: FastForward
+        last_encoder_direction = 0;
+      } else if (last_encoder_direction < 0) {
+        // TODO: Rewind
+        last_encoder_direction = 0;
+      }
       HAL::key_press_event[2] = false;
-      // printf("Gallery menu requested\n");
-      LOCKLV();
-      for (int i = 0; i < 5; ++i) {
-        if (i != ((image_pointer_left + 3 - image_spare_left) % 5)) {
+      if (HAL::key_press_event[3]) {
+        HAL::key_press_event[3] = false;
+        LOCKLV();
+        full_screen_hide();
+        UNLOCKLV();
+      }
+    case GALLERY_STATE_MENU:
+      if (last_encoder_direction > 0) {
+        LOCKLV();
+        image_obj_slide_right();
+        UNLOCKLV();
+        last_encoder_direction = 0;
+        current_state = GALLERY_STATE_LIST;
+      } else if (last_encoder_direction < 0) {
+        LOCKLV();
+        image_obj_slide_left();
+        UNLOCKLV();
+        last_encoder_direction = 0;
+        current_state = GALLERY_STATE_LIST;
+      }
+      if (HAL::key_press_event[2] || has_hal_go_back_event) {
+        HAL::key_press_event[2] = false;
+        LOCKLV();
+        for (int i = 0; i < 5; ++i) {
           if (lv_obj_get_child_cnt(image_obj[i]) >= 2) {
             lv_obj_t *btn = lv_obj_get_child(image_obj[i], -1);
             lv_obj_del(btn);
           }
         }
+        UNLOCKLV();
+        current_state = GALLERY_STATE_LIST;
       }
-      createDeleteButton(
-          image_obj[(image_pointer_left + 3 - image_spare_left) % 5]);
-      UNLOCKLV();
-      current_state = GALLERY_STATE_MENU;
-    }
-    if (HAL::key_press_event[3]) {
       HAL::key_press_event[3] = false;
-      LOCKLV();
-      full_screen_show(
-          image_src_id[(image_pointer_left + 3 - image_spare_left) % 5]);
-      UNLOCKLV();
+      break;
+    default:
+      break;
     }
-    break;
-  case GALLERY_STATE_FULLSCREEN:
-    if (last_encoder_direction > 0) {
-      // TODO: FastForward
-      last_encoder_direction = 0;
-    } else if (last_encoder_direction < 0) {
-      // TODO: Rewind
-      last_encoder_direction = 0;
-    }
-    HAL::key_press_event[2] = false;
-    if (HAL::key_press_event[3]) {
-      HAL::key_press_event[3] = false;
-      LOCKLV();
-      full_screen_hide();
-      UNLOCKLV();
-    }
-  case GALLERY_STATE_MENU:
-    if (last_encoder_direction > 0) {
-      LOCKLV();
-      image_obj_slide_right();
-      UNLOCKLV();
-      last_encoder_direction = 0;
-      current_state = GALLERY_STATE_LIST;
-    } else if (last_encoder_direction < 0) {
-      LOCKLV();
-      image_obj_slide_left();
-      UNLOCKLV();
-      last_encoder_direction = 0;
-      current_state = GALLERY_STATE_LIST;
-    }
-    if (HAL::key_press_event[2] || has_hal_go_back_event) {
-      HAL::key_press_event[2] = false;
-      LOCKLV();
-      for (int i = 0; i < 5; ++i) {
-        if (lv_obj_get_child_cnt(image_obj[i]) >= 2) {
-          lv_obj_t *btn = lv_obj_get_child(image_obj[i], -1);
-          lv_obj_del(btn);
-        }
-      }
-      UNLOCKLV();
-      current_state = GALLERY_STATE_LIST;
-    }
-    HAL::key_press_event[3] = false;
-    break;
-  default:
-    break;
   }
 }
