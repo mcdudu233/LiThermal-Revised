@@ -93,7 +93,14 @@ int16_t PowerManager_getBatteryVoltage() {
   result = buf[0];
   result <<= 8;
   result |= buf[1];
-  return result + (uint16_t)(VOLTAGE_OFFSET * 1000);
+
+  result += (uint16_t)(VOLTAGE_OFFSET * 1000);
+  if (result >= VOLTAGE_BATTERY * 1000) {
+    result += (uint16_t)(VOLTAGE_EXTERNAL_OFFSET * 1000);
+  } else {
+    result += (uint16_t)(VOLTAGE_INTERNAL_OFFSET * 1000);
+  }
+  return result;
 }
 
 bool PowerManager_isCharging() {

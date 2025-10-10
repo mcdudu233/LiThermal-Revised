@@ -20,5 +20,13 @@
 #define SERIAL_CMD_USBMODE_DIRECT 0x13
 #define SERIAL_CMD_IS_CHARGING 0x59
 
-// 二极管压降 (V)
-#define VOLTAGE_OFFSET 0.55
+// 压降偏移 (V)
+#define VOLTAGE_OFFSET 0.0
+#define VOLTAGE_EXTERNAL_OFFSET 0.36
+#define VOLTAGE_INTERNAL_OFFSET 0.25
+// 判断是否为锂电池界限
+#define VOLTAGE_BATTERY 4.3
+
+// 锂电池电压范围 (V)
+#define BATTERY_VOLTAGE_MIN 3.2
+#define BATTERY_VOLTAGE_MAX 4.2
