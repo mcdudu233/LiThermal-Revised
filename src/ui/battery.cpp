@@ -62,6 +62,7 @@ void battery_show() {
 
 void battery_hide() { cardBattery.move(BATTERY_CARD_X, BATTERY_CARD_HIDE_Y); }
 
+static int last_battery = 101;
 void battery_loop() {
   static int cnt = 0;
   static bool last_charging = false;
@@ -71,50 +72,58 @@ void battery_loop() {
       LOCKLV();
       battery_show();
       UNLOCKLV();
-      cnt = 20;
+      cnt = 100;
     }
     ++cnt;
-    if (cnt >= 20) {
+    if (cnt >= 100) {
       int16_t voltage = PowerManager_getBatteryVoltage();
       bool charging = PowerManager_isCharging();
       if (voltage > 0) {
-        LOCKLV();
-        //        lv_label_set_text_fmt(lv_obj_get_child(cardBattery.obj, 0),
-        //        "%d.%02dV",
-        //                              voltage / 1000, voltage % 1000 / 10);
-        float percent = (voltage / 1000.0 - BATTERY_VOLTAGE_MIN) /
-                        (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) * 100.0;
+        int percent =
+            (int)((voltage / 1000.0 - BATTERY_VOLTAGE_MIN) /
+                  (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) * 100.0);
         if (percent < 0) {
           percent = 0;
         } else if (percent > 100) {
           percent = 100;
         }
-        // 设置电量颜色
-        if (percent <= 20) {
-          lv_obj_set_style_bg_color(objBattery, lv_color_hex(0xff0000), 0);
-        } else if (percent > 20) {
-          lv_obj_set_style_bg_color(objBattery, lv_color_hex(0x00ff00), 0);
-        }
-        // 修改电量颜色宽度
-        lv_obj_set_width(objBattery, BATTERY_OUTLINE_WIDTH * percent / 100 - 1);
 
         if (charging != last_charging) {
           last_charging = charging;
           if (charging) {
+            // 显示为充电中
             lv_obj_fade_in(imgBolt, 500, 0);
           } else {
             lv_obj_fade_out(imgBolt, 300, 0);
           }
+          last_battery = 101;
         }
-        lv_obj_t *text = lv_obj_get_child(lv_obj_get_parent(objBattery), -1);
-        if (charging) {
-          // 显示为充电中
-          lv_label_set_text_fmt(text, "");
-        } else {
+        // 保证电量显示稳定
+        if (percent < last_battery) {
+          last_battery = percent;
+
+          LOCKLV();
+          //        lv_label_set_text_fmt(lv_obj_get_child(cardBattery.obj, 0),
+          //        "%d.%02dV",
+          //                              voltage / 1000, voltage % 1000 / 10);
+          // 设置电量颜色
+          if (percent <= 20) {
+            lv_obj_set_style_bg_color(objBattery, lv_color_hex(0xff0000), 0);
+          } else {
+            lv_obj_set_style_bg_color(objBattery, lv_color_hex(0x00ff00), 0);
+          }
+          // 修改电量颜色宽度
+          lv_obj_set_width(objBattery,
+                           BATTERY_OUTLINE_WIDTH * percent / 100 - 1);
           // 修改电池百分比
-          lv_label_set_text_fmt(text, "%d", (int)percent);
+          lv_obj_t *text = lv_obj_get_child(lv_obj_get_parent(objBattery), -1);
+          if (charging) {
+            lv_label_set_text_fmt(text, "");
+          } else {
+            lv_label_set_text_fmt(text, "%d", (int)percent);
+          }
+          UNLOCKLV();
         }
-        UNLOCKLV();
       }
       cnt = 0;
     }

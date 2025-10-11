@@ -7,7 +7,7 @@
 #include "PowerManager.h"
 #include "my_main.h"
 
-#define BATTERY_CARD_X 268
+#define BATTERY_CARD_X 270
 #define BATTERY_CARD_SHOW_Y -13
 #define BATTERY_CARD_HIDE_Y -43
 #define BATTERY_CARD_WIDTH 50
