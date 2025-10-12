@@ -23,10 +23,15 @@
 // 压降偏移 (V)
 #define VOLTAGE_OFFSET 0.0
 #define VOLTAGE_EXTERNAL_OFFSET 0.36
-#define VOLTAGE_INTERNAL_OFFSET 0.05
+#define VOLTAGE_INTERNAL_OFFSET 0.02
 // 判断是否为锂电池界限
 #define VOLTAGE_BATTERY 4.3
 
 // 锂电池电压范围 (V)
-#define BATTERY_VOLTAGE_MIN 3.2
+#define BATTERY_VOLTAGE_MIN 3.5
 #define BATTERY_VOLTAGE_MAX 4.2
+
+int16_t PowerManager_getBatteryVoltage();
+bool PowerManager_isCharging();
+void PowerManager_init();
+void PowerManager_powerOff();

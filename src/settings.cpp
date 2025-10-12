@@ -1,6 +1,5 @@
-#include <my_main.h>
-#define SETTINGS_HEAD 0x80000001
-#define SETTINGS_TAIL 0x1715600D
+#include "settings.h"
+
 settingsStorage_t globalSettings;
 void settings_default() {
   globalSettings.__head = SETTINGS_HEAD;

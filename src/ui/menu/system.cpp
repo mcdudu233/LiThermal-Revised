@@ -316,8 +316,6 @@ static void menu_system_construct(lv_obj_t *parent) {
           lv_obj_add_state(ui_switch_display_battery, LV_STATE_CHECKED);
           lv_dropdown_set_selected(ui_list_picture_format, 2);
           lv_dropdown_set_selected(ui_list_video_format, 2);
-          widget_graph_updateSettings();
-          ui_crosshairs_updateVisibility();
         } else {
           lv_label_set_text_fmt(lv_obj_get_child(e->target, 0),
                                 "再按%d次后恢复", factory_reset_cnt);

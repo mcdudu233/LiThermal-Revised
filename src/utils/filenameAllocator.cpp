@@ -1,12 +1,5 @@
-#include <my_main.h>
-#include <stdio.h>
-#include <string.h>
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <dirent.h>
-#include <utils/filenameAllocator.h>
-#define GALLERY_MAX_IMAGES 100000 // 必须为8的倍数
+#include "utils/filenameAllocator.h"
+
 static uint8_t image_hashmap[GALLERY_MAX_IMAGES / 8];
 static const uint32_t countTable[256] = {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4,

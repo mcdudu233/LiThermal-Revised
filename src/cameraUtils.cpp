@@ -63,7 +63,7 @@ void CameraUtils::setCameraIP() {
 
 void CameraUtils::initHTTPClient() { cli.set_basic_auth("admin", "Ab123456"); }
 
-#include <cJSON.h>
+#include <utils/cJSON.h>
 void CameraUtils::getTemperature() {
   auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/1/"
                      "rulesTemperatureInfo?format=json");

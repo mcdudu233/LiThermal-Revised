@@ -101,6 +101,9 @@ void battery_loop() {
         // 保证电量显示稳定
         if (percent < last_battery) {
           last_battery = percent;
+          // TODO 低电量关机
+          //          if (percent < 5) {
+          //          }
 
           LOCKLV();
           //        lv_label_set_text_fmt(lv_obj_get_child(cardBattery.obj, 0),

@@ -1,19 +1,4 @@
 #include "myHAL.h"
-#include "lv_drivers/display/sunxifb.h"
-#include <linux/input.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <time.h>
-#include <unistd.h>
-
-void refresh_poweroff_key(); // 处理关机按钮（左侧第一个按钮），位于poweroff.cpp
-
-#define INPUT_DEVICE_ENCODER "/dev/input/event0"
-#define INPUT_DEVICE_KEY "/dev/input/event2"
-
-#define IF_CHECK_FILENAME "/proc/net/dev"
-#define IF_CHECK_NAME "usb0"
-#define IF_CHECK_MAX_SIZE 2048
 
 bool HAL::key_pressed[3] = {0, 0, 0};
 time_t HAL::key_pressed_start_time[3] = {0, 0, 0};
@@ -44,7 +29,7 @@ static void *thread_refreshKey(void *) {
     return NULL;
   }
   struct input_event ev_key;
-  while (1) {
+  while (true) {
     read(fd_key, &ev_key, sizeof(struct input_event));
     if (ev_key.type == EV_KEY) {
       if (ev_key.code == KEY_ENTER) {
@@ -117,34 +102,23 @@ static inline void initInputDevices() {
 /// @brief hal线程，如按钮状态刷新
 void *thread_hal_func(void *) {
   while (true) {
-    refresh_poweroff_key();
+    poweroff_loop();
     if (global_poweroff_request) {
       global_poweroff_request = false;
       usleep(500 * 1000);
       PowerManager_powerOff();
     }
 
-    battery_loop();
-    brightness_loop();
     menu_loop();
     menu_gallery_loop(false);
+    camera_loop();
+    battery_loop();
+    brightness_loop();
 
-    if (current_mode == MODE_MAINPAGE) {
-      if (HAL::key_press_event[2]) {
-        // 开始/停止录像
-        camera_record_toggle_dump_stream();
-        HAL::key_press_event[2] = false;
-      }
-      if (HAL::key_press_event[3]) {
-        camera_take_photo_from_stream();
-        HAL::key_press_event[3] = false;
-      }
-    } else // 清零提取出的编码器变化值
-    {
-      last_encoder_direction = 0;
-      HAL::key_press_event[2] = false;
-      HAL::key_press_event[3] = false;
-    }
+    // 清零提取出的编码器变化值
+    last_encoder_direction = 0;
+    HAL::key_press_event[2] = false;
+    HAL::key_press_event[3] = false;
 
     usleep(10000);
   }

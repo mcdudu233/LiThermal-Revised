@@ -4,7 +4,10 @@
 
 #pragma once
 
-#include "my_main.h"
+#include "myHAL.h"
+#include "settings.h"
+#include "ui/animations.h"
+#include "ui/fonts.h"
 
 #define MENU_SYSTEM_CARD_WIDTH 300
 #define MENU_SYSTEM_CARD_HEIGHT 220

@@ -5,7 +5,11 @@
 #pragma once
 
 #include "PowerManager.h"
-#include "my_main.h"
+#include "lvgl.h"
+#include "settings.h"
+#include "ui/animations.h"
+#include "ui/lock.h"
+#include "ui/menu.h"
 
 #define BATTERY_CARD_X 270
 #define BATTERY_CARD_SHOW_Y -13

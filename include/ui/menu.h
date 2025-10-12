@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "my_main.h"
+#include "lvgl.h"
 #include "ui/menu/basic.h"
 #include "ui/menu/gallery.h"
 #include "ui/menu/system.h"

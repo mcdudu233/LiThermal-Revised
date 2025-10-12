@@ -1,4 +1,10 @@
-#include <my_main.h>
+#include "ui/camera.h"
+
+#ifndef TJE_IMPLEMENTATION
+#define TJE_IMPLEMENTATION
+#include "utils/tiny_jpeg.h"
+#endif
+
 static void flash_bang_effect() {
   LOCKLV();
   lv_obj_t *mask_camera = lv_obj_create(lv_scr_act());
@@ -11,10 +17,9 @@ static void flash_bang_effect() {
   lv_obj_del_delayed(mask_camera, 300);
   UNLOCKLV();
 }
-#define TJE_IMPLEMENTATION
-#include "utils/tiny_jpeg.h"
-void camera_take_photo_from_stream() {
-  if (cameraUtils.connected == false)
+
+void camera_take_photo() {
+  if (!cameraUtils.connected)
     return;
   switch (globalSettings.pictureFormat) {
   case jpeg: {
@@ -56,15 +61,14 @@ void camera_take_photo_from_stream() {
   }
   flash_bang_effect();
 }
-#include "lottie_rec.h"
-extern bool packet_dumping;
-lv_timer_t *tm_create_circle = NULL, *tm_circle = NULL;
-lv_obj_t *circle_REC = NULL;
-lv_obj_t *lot_rec = NULL;
-void camera_record_toggle_dump_stream() {
-  if (cameraUtils.connected == false)
+
+static lv_timer_t *tm_create_circle = NULL, *tm_circle = NULL;
+static lv_obj_t *circle_REC = NULL;
+static lv_obj_t *lot_rec = NULL;
+void camera_record_video() {
+  if (!cameraUtils.connected)
     return;
-  if (packet_dumping == true) {
+  if (packet_dumping) {
     flash_bang_effect();
     LOCKLV();
     if (tm_create_circle) {
@@ -144,7 +148,7 @@ void camera_record_toggle_dump_stream() {
           lv_obj_fade_in(circle_REC, 700, 0);
           tm_circle = lv_timer_create(
               [](lv_timer_t *tm) {
-                if (lv_obj_is_valid(circle_REC) == false) {
+                if (!lv_obj_is_valid(circle_REC)) {
                   lv_timer_del(tm);
                   circle_REC = NULL;
                   return;
@@ -160,5 +164,19 @@ void camera_record_toggle_dump_stream() {
           tm_create_circle = NULL;
         },
         1800, 0);
+  }
+}
+
+void camera_loop() {
+  if (current_mode == MODE_MAINPAGE) {
+    if (HAL::key_press_event[2]) {
+      // 开始/停止录像
+      camera_record_video();
+      HAL::key_press_event[2] = false;
+    }
+    if (HAL::key_press_event[3]) {
+      camera_take_photo();
+      HAL::key_press_event[3] = false;
+    }
   }
 }

@@ -4,7 +4,14 @@
 
 #pragma once
 
-#include "my_main.h"
+#include "myHAL.h"
+#include "settings.h"
+#include "ui/animations.h"
+#include "ui/fonts.h"
+#include "ui/imgs.h"
+#include "ui/lock.h"
+#include <string>
+#include <sys/stat.h>
 
 #define GALLERY_CARD_SHOW_Y -13
 #define GALLERY_CARD_HIDE_Y -43
@@ -23,12 +30,6 @@ typedef enum {
   PHOTO_TYPE_VIDEO_MP4,
   PHOTO_TYPE_VIDEO_MJPEG,
 } photo_type_t;
-
-/// @brief 渲染图像/视频缩略图到canvas
-/// @param obj_id 对应canvas在image_obj中的位置
-extern "C" const lv_img_dsc_t video;
-extern "C" const lv_img_dsc_t image;
-extern "C" const lv_img_dsc_t imageraw;
 
 void menu_gallery_loop(bool has_hal_go_back_event);
 void menu_gallery_show();

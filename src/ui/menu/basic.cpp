@@ -109,7 +109,6 @@ static void menu_basic_construct(lv_obj_t *ui_Panel1) {
       [](lv_event_t *e) {
         globalSettings.graphSize =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
-        widget_graph_updateSettings();
       },
       LV_EVENT_CLICKED, NULL); // 大尺寸
   lv_obj_add_event_cb(
@@ -117,7 +116,6 @@ static void menu_basic_construct(lv_obj_t *ui_Panel1) {
       [](lv_event_t *e) {
         globalSettings.enableMaxValueDisplay =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
-        ui_crosshairs_updateVisibility();
       },
       LV_EVENT_CLICKED, NULL); // 最大值
   lv_obj_add_event_cb(
@@ -132,7 +130,6 @@ static void menu_basic_construct(lv_obj_t *ui_Panel1) {
       [](lv_event_t *e) {
         globalSettings.enableGraph =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
-        widget_graph_updateSettings();
       },
       LV_EVENT_CLICKED, NULL); // 显示图表
   lv_obj_add_event_cb(
@@ -140,21 +137,18 @@ static void menu_basic_construct(lv_obj_t *ui_Panel1) {
       [](lv_event_t *e) {
         globalSettings.enableMinValueDisplay =
             lv_obj_has_state(e->target, LV_STATE_CHECKED);
-        ui_crosshairs_updateVisibility();
       },
       LV_EVENT_CLICKED, NULL); // 最小值
   lv_obj_add_event_cb(
       ui_Roller1,
       [](lv_event_t *e) {
         globalSettings.graphRefreshInterval = lv_roller_get_selected(e->target);
-        widget_graph_updateSettings();
       },
       LV_EVENT_KEY, NULL); // 数据源
   lv_obj_add_event_cb(
       ui_Roller2,
       [](lv_event_t *e) {
         globalSettings.graphPos = lv_roller_get_selected(e->target);
-        widget_graph_updateSettings();
       },
       LV_EVENT_KEY, NULL); // 位置
   lv_obj_add_event_cb(

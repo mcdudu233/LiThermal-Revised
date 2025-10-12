@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include "my_main.h"
+#include "settings.h"
+#include "ui/animations.h"
+#include "ui/fonts.h"
 
 #define MENU_BASIC_CARD_WIDTH 300
 #define MENU_BASIC_CARD_HEIGHT 200

@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include "my_main.h"
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
+
 typedef int32_t s32;
 typedef uint32_t u32;
+
 #include <sunxi_display2.h>
 #include <sys/ioctl.h>
 #include <unistd.h>

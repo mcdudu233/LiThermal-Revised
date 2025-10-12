@@ -1,5 +1,4 @@
-#include "my_main.h"
-pthread_mutex_t lv_mutex;
+#include "main.h"
 
 using namespace std;
 // 热成像刷新线程
@@ -11,14 +10,13 @@ void *thread_app_func(void *) {
   static uint32_t last_use4117Cursors = -1;
   static uint32_t last_enableMinValueDisplay = -1;
   static uint32_t last_enableMaxValueDisplay = -1;
-  while (cameraUtils.connected == false)
+  while (!cameraUtils.connected)
     usleep(50000);
   LOCKLV();
-  widget_graph_updateSettings();
-  ui_crosshairs_updateVisibility();
-  widget_graph_check_visibility();
+  crosshairs_show();
+  graph_show();
   UNLOCKLV();
-  while (1) {
+  while (true) {
     if (last_color_palette != globalSettings.colorPalette) {
       last_color_palette = globalSettings.colorPalette;
       cameraUtils.setColorPalette(globalSettings.colorPalette);
@@ -49,17 +47,14 @@ void *thread_app_func(void *) {
       last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
       last_show_center = globalSettings.enableCenterValueDisplay;
     }
-    LOCKLV();
-    ui_crosshairs_updatePos();
-    widget_graph_check_visibility();
-    UNLOCKLV();
+
+    crosshairs_loop();
+    graph_loop();
 
     usleep(40000);
   }
-  return NULL;
 }
 
-#include <sys/time.h>
 uint64_t getTimeUS() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -68,12 +63,12 @@ uint64_t getTimeUS() {
 // 热成像温度更新线程 5HZ~10HZ
 pthread_t thread_temperature;
 void *thread_temperature_func(void *) {
-  while (cameraUtils.connected == false)
+  while (!cameraUtils.connected)
     usleep(50000);
   int wait = 100;
   // uint64_t fps_start = getTimeUS();
   // int fps = 0;
-  while (1) {
+  while (true) {
     uint64_t start = getTimeUS();
     // uint64_t fps_end = getTimeUS();
     // uint64_t fps_last = fps_end - fps_start;
@@ -84,16 +79,14 @@ void *thread_temperature_func(void *) {
     //     fps = 0;
     // }
     // fps++;
-    if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS) {
-      if (!globalSettings.useBuildinCursors) {
-        if (globalSettings.enableMinValueDisplay ||
-            globalSettings.enableMaxValueDisplay) {
-          cameraUtils.getTemperature();
-          if (globalSettings.enableCenterValueDisplay) {
-            wait = 200;
-          } else {
-            wait = 100;
-          }
+    if (!globalSettings.useBuildinCursors) {
+      if (globalSettings.enableMinValueDisplay ||
+          globalSettings.enableMaxValueDisplay) {
+        cameraUtils.getTemperature();
+        if (globalSettings.enableCenterValueDisplay) {
+          wait = 200;
+        } else {
+          wait = 100;
         }
       }
     }
@@ -108,11 +101,11 @@ void *thread_temperature_func(void *) {
 // 热成像中心温度更新线程 2HZ
 pthread_t thread_temperature_center;
 void *thread_temperature_center_func(void *) {
-  while (cameraUtils.connected == false)
+  while (!cameraUtils.connected)
     usleep(50000);
   // uint64_t fps_start = getTimeUS();
   // int fps = 0;
-  while (1) {
+  while (true) {
     uint64_t start = getTimeUS();
     // uint64_t fps_end = getTimeUS();
     // uint64_t fps_last = fps_end - fps_start;
@@ -122,11 +115,9 @@ void *thread_temperature_center_func(void *) {
     //     fps); fps_start = fps_end; fps = 0;
     // }
     // fps++;
-    if (current_mode == MODE_MAINPAGE || current_mode == MODE_CAMERA_SETTINGS) {
-      if (!globalSettings.useBuildinCursors &&
-          globalSettings.enableCenterValueDisplay) {
-        cameraUtils.getTemperatureCenter();
-      }
+    if (!globalSettings.useBuildinCursors &&
+        globalSettings.enableCenterValueDisplay) {
+      cameraUtils.getTemperatureCenter();
     }
     uint64_t end = getTimeUS();
     uint64_t last = end - start;
@@ -159,7 +150,6 @@ void port_forward() {
 }
 
 int main() {
-  sleep(1); // Why?
   port_forward();
 
   system("mkdir " GALLERY_PATH);
@@ -170,9 +160,7 @@ int main() {
   lv_obj_clear_flag(lv_layer_top(), LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_clear_flag(lv_layer_sys(), LV_OBJ_FLAG_SCROLLABLE);
   printf("Loop begin\n");
-  waitboot_scr_load(lv_scr_act());
-  widget_graph_create();
-  ui_crosshairs_create();
+  boot_load(lv_scr_act());
   pthread_create(&thread_ui, NULL, thread_ui_func, NULL);
   cameraUtils.initHTTPClient();
   pthread_create(&thread_app, NULL, thread_app_func, NULL);

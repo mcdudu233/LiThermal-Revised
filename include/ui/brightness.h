@@ -5,7 +5,9 @@
 #pragma once
 
 #include "backlight.h"
-#include "my_main.h"
+#include "lvgl.h"
+#include "ui/lock.h"
+#include "ui/menu.h"
 
 #define UI_BRIGHTNESSBAR_Y -40
 #define UI_BRIGHTNESSBAR_X_HIDE 50
