@@ -37,6 +37,7 @@ typedef struct settingsStorage_t {
   uint32_t graphRefreshInterval;
   uint32_t enableMaxValueDisplay;
   uint32_t enableMinValueDisplay;
+  uint32_t enableAvgValueDisplay;
   uint32_t enableCenterValueDisplay;
   uint32_t preserveOSD;
   uint32_t useBuildinCursors;

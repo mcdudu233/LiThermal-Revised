@@ -266,7 +266,7 @@ void CameraUtils::calibrateManually() {
           "application/xml");
 }
 
-void CameraUtils::set4117Cursor(bool min, bool max) {
+void CameraUtils::set4117Cursor(bool min, bool max, bool avg) {
   auto res = cli.Get("/ISAPI/Thermal/channels/1/thermometry/basicParam");
   int len;
   if (res && res->status == 200) {
@@ -288,8 +288,6 @@ void CameraUtils::set4117Cursor(bool min, bool max) {
         break;
       }
       last_start = this_end + 1;
-      // TODO
-      // <displayAverageTemperatureEnabled>false</displayAverageTemperatureEnabled>
       if (line.find("displayMax") != std::string::npos) {
         if (max) {
           result += "<displayMaxTemperatureEnabled>true</"
@@ -305,6 +303,14 @@ void CameraUtils::set4117Cursor(bool min, bool max) {
         } else {
           result += "<displayMinTemperatureEnabled>false</"
                     "displayMinTemperatureEnabled>\n";
+        }
+      } else if (line.find("displayAverage") != std::string::npos) {
+        if (avg) {
+          result += "<displayAverageTemperatureEnabled>true</"
+                    "displayAverageTemperatureEnabled>\n";
+        } else {
+          result += "<displayAverageTemperatureEnabled>false</"
+                    "displayAverageTemperatureEnabled>\n";
         }
       } else if (line.find("<enabled>") != std::string::npos) {
         result += "<enabled>true</enabled>\n";

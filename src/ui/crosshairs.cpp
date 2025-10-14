@@ -8,6 +8,7 @@ static lv_obj_t *crosshairs_min = NULL;
 static lv_obj_t *crosshairs_center = NULL;
 static lv_obj_t *crosshairs_label_max = NULL;
 static lv_obj_t *crosshairs_label_min = NULL;
+static lv_obj_t *crosshairs_label_avg = NULL;
 static lv_obj_t *crosshairs_label_center = NULL;
 
 static void crosshair_move(lv_obj_t *obj, lv_coord_t x, lv_coord_t y) {
@@ -49,6 +50,11 @@ static void crosshairs_update_visibility() {
   } else {
     lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
   }
+  if (globalSettings.enableAvgValueDisplay) {
+    lv_obj_clear_flag(crosshairs_label_avg, LV_OBJ_FLAG_HIDDEN);
+  } else {
+    lv_obj_add_flag(crosshairs_label_avg, LV_OBJ_FLAG_HIDDEN);
+  }
   if (globalSettings.enableCenterValueDisplay) {
     lv_obj_clear_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
   } else {
@@ -57,6 +63,7 @@ static void crosshairs_update_visibility() {
   lv_obj_move_foreground(crosshairs_max_obj);
   lv_obj_move_foreground(crosshairs_min_obj);
   lv_obj_move_foreground(crosshairs_center_obj);
+  lv_obj_move_foreground(crosshairs_label_avg);
 }
 
 void crosshairs_show() {
@@ -64,7 +71,7 @@ void crosshairs_show() {
       crosshairs_center_obj == NULL || crosshairs_max == NULL ||
       crosshairs_min == NULL || crosshairs_center == NULL ||
       crosshairs_label_max == NULL || crosshairs_label_min == NULL ||
-      crosshairs_label_center == NULL) {
+      crosshairs_label_center == NULL || crosshairs_label_avg == NULL) {
     crosshairs_max_obj = lv_obj_create(lv_scr_act());
     lv_obj_set_size(crosshairs_max_obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_all(crosshairs_max_obj, 0, 0);
@@ -105,6 +112,16 @@ void crosshairs_show() {
     lv_obj_align_to(crosshairs_label_min, crosshairs_min,
                     LV_ALIGN_OUT_RIGHT_MID, 0, 0);
 
+    crosshairs_label_avg = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(crosshairs_label_avg, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_color(crosshairs_label_avg,
+                                lv_color_make(0x00, 0xFF, 0x00), 0);
+    lv_obj_set_style_bg_color(crosshairs_label_avg, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(crosshairs_label_avg, LV_OPA_30, 0);
+    lv_obj_set_style_radius(crosshairs_label_avg, 3, 0);
+    lv_obj_align_to(crosshairs_label_avg, lv_scr_act(), LV_ALIGN_OUT_LEFT_TOP,
+                    30, 0);
+
     crosshairs_center_obj = lv_obj_create(lv_scr_act());
     lv_obj_set_size(crosshairs_center_obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_all(crosshairs_center_obj, 0, 0);
@@ -128,6 +145,7 @@ void crosshairs_show() {
       lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
       lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
       lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
+      lv_obj_add_flag(crosshairs_label_avg, LV_OBJ_FLAG_HIDDEN);
     }
   }
 }
@@ -185,6 +203,12 @@ void crosshairs_loop() {
     crosshair_move(crosshairs_min_obj, x, y);
     sprintf(buffer, "%.1f", cameraUtils.lastResult.minTemperature);
     lv_label_set_text(crosshairs_label_min, buffer);
+    UNLOCKLV();
+  }
+  if (globalSettings.enableAvgValueDisplay) {
+    LOCKLV();
+    sprintf(buffer, "%.1f", cameraUtils.lastResult.averageTemperature);
+    lv_label_set_text(crosshairs_label_avg, buffer);
     UNLOCKLV();
   }
   if (globalSettings.enableCenterValueDisplay) {

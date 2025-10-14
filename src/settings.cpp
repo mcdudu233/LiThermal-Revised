@@ -11,6 +11,7 @@ void settings_default() {
   globalSettings.graphSize = 0;
   globalSettings.enableMaxValueDisplay = false;
   globalSettings.enableMinValueDisplay = false;
+  globalSettings.enableAvgValueDisplay = false;
   globalSettings.enableCenterValueDisplay = true;
   globalSettings.preserveOSD = false;
   globalSettings.useBuildinCursors = false;

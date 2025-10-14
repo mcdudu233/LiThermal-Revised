@@ -10,6 +10,7 @@ void *thread_app_func(void *) {
   static uint32_t last_use4117Cursors = -1;
   static uint32_t last_enableMinValueDisplay = -1;
   static uint32_t last_enableMaxValueDisplay = -1;
+  static uint32_t last_enableAvgValueDisplay = -1;
   while (!cameraUtils.connected)
     usleep(50000);
   LOCKLV();
@@ -25,26 +26,31 @@ void *thread_app_func(void *) {
       last_use4117Cursors = globalSettings.useBuildinCursors;
       if (last_use4117Cursors) {
         cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay,
-                                  globalSettings.enableMaxValueDisplay);
+                                  globalSettings.enableMaxValueDisplay,
+                                  globalSettings.enableAvgValueDisplay);
         cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
       } else {
-        cameraUtils.set4117Cursor(false, false);
+        cameraUtils.set4117Cursor(false, false, false);
         cameraUtils.setCenterMeasure(false);
       }
       last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
       last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
+      last_enableAvgValueDisplay = globalSettings.enableAvgValueDisplay;
       last_show_center = globalSettings.enableCenterValueDisplay;
     }
     if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay ||
         last_enableMinValueDisplay != globalSettings.enableMinValueDisplay ||
+        last_enableAvgValueDisplay != globalSettings.enableAvgValueDisplay ||
         last_show_center != globalSettings.enableCenterValueDisplay) {
       if (globalSettings.useBuildinCursors) {
         cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay,
-                                  globalSettings.enableMaxValueDisplay);
+                                  globalSettings.enableMaxValueDisplay,
+                                  globalSettings.enableAvgValueDisplay);
         cameraUtils.setCenterMeasure(globalSettings.enableCenterValueDisplay);
       }
       last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
       last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
+      last_enableAvgValueDisplay = globalSettings.enableAvgValueDisplay;
       last_show_center = globalSettings.enableCenterValueDisplay;
     }
 
@@ -81,7 +87,8 @@ void *thread_temperature_func(void *) {
     // fps++;
     if (!globalSettings.useBuildinCursors) {
       if (globalSettings.enableMinValueDisplay ||
-          globalSettings.enableMaxValueDisplay) {
+          globalSettings.enableMaxValueDisplay ||
+          globalSettings.enableAvgValueDisplay) {
         cameraUtils.getTemperature();
         if (globalSettings.enableCenterValueDisplay) {
           wait = 200;

@@ -56,7 +56,7 @@ public:
                          bool saveExtra = true);
   void setCenterMeasure(bool en);
   void calibrateManually();
-  void set4117Cursor(bool min, bool max);
+  void set4117Cursor(bool min, bool max, bool avg);
 };
 
 extern CameraUtils cameraUtils;
