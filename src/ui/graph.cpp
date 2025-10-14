@@ -200,7 +200,7 @@ static void setGraphPosition(int new_pos) {
   if (new_pos == 2 || new_pos == 3)
     y = 240 - CARD_SIZE_HEIGHT - 10;
   else
-    y = 10;
+    y = 20;
   card.move(x, y);
 }
 
@@ -270,40 +270,51 @@ void graph_show() {
   }
 }
 
-static bool hidden_by_view = false;
+static uint32_t last_enable_graph = -1;
+static uint32_t last_graph_size = -1;
+static uint32_t last_refresh_interval = -1;
+static uint32_t last_graph_pos = -1;
 void graph_loop() {
   LOCKLV();
   graph_show();
   UNLOCKLV();
 
-  if (hidden_by_view && current_mode != MODE_GALLERY) {
+  if (last_enable_graph != globalSettings.enableGraph) {
+    last_enable_graph = globalSettings.enableGraph;
     LOCKLV();
-    resizeGraph(globalSettings.graphSize);
     if (!is_showed && globalSettings.enableGraph)
       showGraph();
-    else if (is_showed && globalSettings.enableGraph == 0)
+    else if (is_showed && !globalSettings.enableGraph)
       hideGraph();
-    chart._data_interval =
-        graph_data_interval_table[globalSettings.graphRefreshInterval];
-    chart._update_interval =
-        graph_data_interval_table[globalSettings.graphRefreshInterval];
-    chart._data_count =
-        chart._width * chart._update_interval / chart._data_interval;
-    chart._data_weight_max = chart._width / chart._data_count;
-    lv_timer_set_period(
-        chart._timer,
-        graph_data_interval_table[globalSettings.graphRefreshInterval]);
-    if (is_showed)
-      setGraphPosition(globalSettings.graphPos);
     UNLOCKLV();
-
-    hidden_by_view = false;
   }
-  if (!hidden_by_view && current_mode == MODE_GALLERY) {
-    LOCKLV();
-    hideGraph(200);
-    UNLOCKLV();
-
-    hidden_by_view = true;
+  if (is_showed) {
+    if (last_graph_size != globalSettings.graphSize) {
+      last_graph_size = globalSettings.graphSize;
+      LOCKLV();
+      resizeGraph(globalSettings.graphSize);
+      UNLOCKLV();
+    }
+    if (last_refresh_interval != globalSettings.graphRefreshInterval) {
+      last_refresh_interval = globalSettings.graphRefreshInterval;
+      LOCKLV();
+      chart._data_interval =
+          graph_data_interval_table[globalSettings.graphRefreshInterval];
+      chart._update_interval =
+          graph_data_interval_table[globalSettings.graphRefreshInterval];
+      chart._data_count =
+          chart._width * chart._update_interval / chart._data_interval;
+      chart._data_weight_max = chart._width / chart._data_count;
+      lv_timer_set_period(
+          chart._timer,
+          graph_data_interval_table[globalSettings.graphRefreshInterval]);
+      UNLOCKLV();
+    }
+    if (last_graph_pos != globalSettings.graphPos) {
+      last_graph_pos = globalSettings.graphPos;
+      LOCKLV();
+      setGraphPosition(globalSettings.graphPos);
+      UNLOCKLV();
+    }
   }
 }

@@ -150,25 +150,7 @@ void crosshairs_show() {
   }
 }
 
-static bool hidden_by_view = false;
 void crosshairs_loop() {
-  //  if (hidden_by_view) {
-  //    if (current_mode == MODE_MAIN || current_mode ==
-  //    MODE_OSD_SETTINGS) {
-  //      hidden_by_view = false;
-  //      crosshairs_update_visibility();
-  //    } else {
-  //      return;
-  //    }
-  //  }
-  //  if (current_mode != MODE_MAIN && current_mode != MODE_OSD_SETTINGS)
-  //  {
-  //    hidden_by_view = true;
-  //    lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
-  //    lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
-  //    lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
-  //  }
-
   LOCKLV();
   crosshairs_show();
   crosshairs_update_visibility();
