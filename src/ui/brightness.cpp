@@ -58,7 +58,7 @@ void brightness_hide() {
 }
 
 void brightness_loop() {
-  if (current_mode == MODE_MAINPAGE && last_encoder_direction != 0) {
+  if (current_mode == MODE_MAIN && last_encoder_direction != 0) {
     if (last_encoder_direction > 0) {
       if (globalSettings.brightness <= (255 - 8))
         globalSettings.brightness += 8;

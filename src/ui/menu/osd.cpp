@@ -1,4 +1,4 @@
-#include "ui/menu/basic.h"
+#include "ui/menu/osd.h"
 
 static MyCard mycardMenuBasic;
 
@@ -175,16 +175,16 @@ static void menu_basic_construct(lv_obj_t *ui_Panel1) {
   lv_roller_set_selected(ui_Roller3, globalSettings.colorPalette, LV_ANIM_OFF);
 }
 
-void menu_basic_show() {
-  mycardMenuBasic.create(lv_layer_top(), 0, MENU_BASIC_CARD_POS_Y,
-                         MENU_BASIC_CARD_WIDTH, MENU_BASIC_CARD_HEIGHT,
+void menu_osd_show() {
+  mycardMenuBasic.create(lv_layer_top(), 0, MENU_OSD_CARD_POS_Y,
+                         MENU_OSD_CARD_WIDTH, MENU_OSD_CARD_HEIGHT,
                          LV_ALIGN_TOP_MID);
   menu_basic_construct(mycardMenuBasic.obj);
   lv_group_focus_obj(lv_obj_get_child(mycardMenuBasic.obj, 0));
   mycardMenuBasic.show();
 }
 
-void menu_basic_hide() {
+void menu_osd_hide() {
   mycardMenuBasic.del();
   settings_save();
 }

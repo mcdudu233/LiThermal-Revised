@@ -2,7 +2,7 @@
 
 static MyCard card_menuPage;
 static bool close_for_opening_submenu = false;
-static int selected_menu_number = -1;
+static button_mode_t selected_menu_number = BUTTON_DEFAULT;
 static bool expanded = false;
 
 static void event_button_clicked_cb(lv_event_t *e) {
@@ -10,7 +10,8 @@ static void event_button_clicked_cb(lv_event_t *e) {
   int code = e->code;
   switch (code) {
   case LV_EVENT_CLICKED:
-    selected_menu_number = reinterpret_cast<int>(e->user_data);
+    selected_menu_number =
+        static_cast<button_mode_t>(reinterpret_cast<int>(e->user_data));
     close_for_opening_submenu = true;
     break;
   case LV_EVENT_FOCUSED:
@@ -40,8 +41,6 @@ static void menu_construct(lv_obj_t *parent) {
   lv_obj_t *ui_Button2 = lv_btn_create(parent);
   lv_obj_set_width(ui_Button2, MENU_BUTTON_WIDTH_DEFAULT);
   lv_obj_set_height(ui_Button2, MENU_BUTTON_HEIGHT_DEFAULT);
-  lv_obj_set_x(ui_Button2, -69);
-  lv_obj_set_y(ui_Button2, 2);
   lv_obj_set_align(ui_Button2, LV_ALIGN_TOP_MID);
   lv_obj_add_flag(ui_Button2, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_Button2, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
@@ -73,8 +72,6 @@ static void menu_construct(lv_obj_t *parent) {
   lv_obj_t *ui_Button3 = lv_btn_create(parent);
   lv_obj_set_width(ui_Button3, MENU_BUTTON_WIDTH_DEFAULT);
   lv_obj_set_height(ui_Button3, MENU_BUTTON_HEIGHT_DEFAULT);
-  lv_obj_set_x(ui_Button3, -1);
-  lv_obj_set_y(ui_Button3, 3);
   lv_obj_set_align(ui_Button3, LV_ALIGN_TOP_MID);
   lv_obj_add_flag(ui_Button3, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_Button3, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
@@ -89,7 +86,7 @@ static void menu_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_Label6, LV_SIZE_CONTENT);  /// 1
   lv_obj_set_height(ui_Label6, LV_SIZE_CONTENT); /// 1
   lv_obj_set_align(ui_Label6, LV_ALIGN_TOP_MID);
-  lv_label_set_text(ui_Label6, "");
+  lv_label_set_text(ui_Label6, "\uE163");
   lv_obj_set_style_text_font(ui_Label6, &ui_font_fontawesome24,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -99,15 +96,44 @@ static void menu_construct(lv_obj_t *parent) {
   lv_obj_set_x(ui_Label7, 0);
   lv_obj_set_y(ui_Label7, 40);
   lv_obj_set_align(ui_Label7, LV_ALIGN_TOP_MID);
-  lv_label_set_text(ui_Label7, "相机\n设置");
+  lv_label_set_text(ui_Label7, "OSD\n设置");
   lv_obj_set_style_text_font(ui_Label7, &ui_font_chinese_18,
+                             LV_PART_MAIN | LV_STATE_DEFAULT);
+
+  lv_obj_t *ui_Button5 = lv_btn_create(parent);
+  lv_obj_set_width(ui_Button5, MENU_BUTTON_WIDTH_DEFAULT);
+  lv_obj_set_height(ui_Button5, MENU_BUTTON_HEIGHT_DEFAULT);
+  lv_obj_set_align(ui_Button5, LV_ALIGN_TOP_MID);
+  lv_obj_add_flag(ui_Button5, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
+  lv_obj_clear_flag(ui_Button5, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
+  lv_obj_set_style_bg_color(ui_Button5, lv_color_hex(0x282B30),
+                            LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(ui_Button5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(ui_Button5, lv_color_hex(0x008C7B),
+                            LV_PART_MAIN | LV_STATE_FOCUSED);
+  lv_obj_set_style_bg_opa(ui_Button5, 255, LV_PART_MAIN | LV_STATE_FOCUSED);
+
+  lv_obj_t *ui_Label10 = lv_label_create(ui_Button5);
+  lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT);  /// 1
+  lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT); /// 1
+  lv_obj_set_align(ui_Label10, LV_ALIGN_TOP_MID);
+  lv_label_set_text(ui_Label10, "");
+  lv_obj_set_style_text_font(ui_Label10, &ui_font_fontawesome24,
+                             LV_PART_MAIN | LV_STATE_DEFAULT);
+
+  lv_obj_t *ui_Label11 = lv_label_create(ui_Button5);
+  lv_obj_set_width(ui_Label11, LV_SIZE_CONTENT);  /// 1
+  lv_obj_set_height(ui_Label11, LV_SIZE_CONTENT); /// 1
+  lv_obj_set_x(ui_Label11, 0);
+  lv_obj_set_y(ui_Label11, 40);
+  lv_obj_set_align(ui_Label11, LV_ALIGN_TOP_MID);
+  lv_label_set_text(ui_Label11, "相机\n设置");
+  lv_obj_set_style_text_font(ui_Label11, &ui_font_chinese_18,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_t *ui_Button4 = lv_btn_create(parent);
   lv_obj_set_width(ui_Button4, MENU_BUTTON_WIDTH_DEFAULT);
   lv_obj_set_height(ui_Button4, MENU_BUTTON_HEIGHT_DEFAULT);
-  lv_obj_set_x(ui_Button4, 67);
-  lv_obj_set_y(ui_Button4, 3);
   lv_obj_set_align(ui_Button4, LV_ALIGN_TOP_MID);
   lv_obj_add_flag(ui_Button4, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
   lv_obj_clear_flag(ui_Button4, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
@@ -138,11 +164,13 @@ static void menu_construct(lv_obj_t *parent) {
 
   // events
   lv_obj_add_event_cb(ui_Button2, event_button_clicked_cb, LV_EVENT_ALL,
-                      reinterpret_cast<void *>(0));
+                      reinterpret_cast<void *>((int)BUTTON_GALLERY));
   lv_obj_add_event_cb(ui_Button3, event_button_clicked_cb, LV_EVENT_ALL,
-                      reinterpret_cast<void *>(1));
+                      reinterpret_cast<void *>((int)BUTTON_OSD));
+  lv_obj_add_event_cb(ui_Button5, event_button_clicked_cb, LV_EVENT_ALL,
+                      reinterpret_cast<void *>((int)BUTTON_CAMERA));
   lv_obj_add_event_cb(ui_Button4, event_button_clicked_cb, LV_EVENT_ALL,
-                      reinterpret_cast<void *>(2));
+                      reinterpret_cast<void *>((int)BUTTON_SYSTEM));
 }
 
 void menu_show() {
@@ -152,7 +180,7 @@ void menu_show() {
     menu_construct(card_menuPage.obj);
     lv_group_focus_obj(lv_obj_get_child(card_menuPage.obj, 0));
   }
-  lv_anim_size(card_menuPage.obj, MENU_BOX_WIDHT, MENU_BOX_HEIGHT, 500, 0);
+  lv_anim_size(card_menuPage.obj, MENU_BOX_WIDTH, MENU_BOX_HEIGHT, 500, 0);
   lv_anim_move(card_menuPage.obj, 0, MENU_BOX_Y_SHOW, 500, 0);
 }
 
@@ -166,29 +194,35 @@ void menu_loop() {
     if (HAL::key_press_event[1]) {
       HAL::key_press_event[1] = false;
       switch (current_mode) {
-      case MODE_MAINPAGE:
+      case MODE_MAIN:
         expanded = true;
         close_for_opening_submenu = false;
         LOCKLV();
         menu_show();
-        current_mode = MODE_MAINMENU;
+        current_mode = MODE_MENU;
         UNLOCKLV();
         break;
       case MODE_GALLERY:
       case MODE_GALLERY_MENU:
         menu_gallery_loop(true); // 在这里处理事件
         break;
+      case MODE_OSD_SETTINGS:
+        LOCKLV();
+        menu_osd_hide();
+        UNLOCKLV();
+        current_mode = MODE_MAIN;
+        break;
       case MODE_CAMERA_SETTINGS:
         LOCKLV();
-        menu_basic_hide();
+        menu_camera_hide();
         UNLOCKLV();
-        current_mode = MODE_MAINPAGE;
+        current_mode = MODE_MAIN;
         break;
       case MODE_SYSTEM_SETTINGS:
         LOCKLV();
         menu_system_hide();
         UNLOCKLV();
-        current_mode = MODE_MAINPAGE;
+        current_mode = MODE_MAIN;
         break;
       default:
         break;
@@ -207,31 +241,37 @@ void menu_loop() {
   } else {
     if (close_for_opening_submenu || HAL::key_press_event[1]) {
       if (!close_for_opening_submenu) {
-        current_mode = MODE_MAINPAGE;
+        current_mode = MODE_MAIN;
       } else {
         switch (selected_menu_number) {
-        case 0:
+        case BUTTON_GALLERY:
           current_mode = MODE_GALLERY;
           menu_gallery_show(); // 这里不需要锁定UI线程
           break;
-        case 1:
-          current_mode = MODE_CAMERA_SETTINGS;
+        case BUTTON_OSD:
+          current_mode = MODE_OSD_SETTINGS;
           LOCKLV();
-          menu_basic_show();
+          menu_osd_show();
           UNLOCKLV();
           break;
-        case 2:
+        case BUTTON_CAMERA:
+          current_mode = MODE_CAMERA_SETTINGS;
+          LOCKLV();
+          menu_camera_show();
+          UNLOCKLV();
+          break;
+        case BUTTON_SYSTEM:
           current_mode = MODE_SYSTEM_SETTINGS;
           LOCKLV();
           menu_system_show();
           UNLOCKLV();
           break;
         default:
-          current_mode = MODE_MAINPAGE;
+          current_mode = MODE_MAIN;
           break;
         }
       }
-      selected_menu_number = -1;
+      selected_menu_number = BUTTON_DEFAULT;
       close_for_opening_submenu = false;
       HAL::key_press_event[1] = false;
       expanded = false;

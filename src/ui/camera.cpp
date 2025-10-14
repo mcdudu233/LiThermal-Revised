@@ -168,7 +168,7 @@ void camera_record_video() {
 }
 
 void camera_loop() {
-  if (current_mode == MODE_MAINPAGE) {
+  if (current_mode == MODE_MAIN) {
     if (HAL::key_press_event[2]) {
       // 开始/停止录像
       camera_record_video();

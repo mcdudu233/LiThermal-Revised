@@ -33,7 +33,7 @@ static void menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_width(ui_Label17, LV_SIZE_CONTENT);  /// 1
   lv_obj_set_height(ui_Label17, LV_SIZE_CONTENT); /// 1
   lv_obj_align(ui_Label17, LV_ALIGN_LEFT_MID, 0, 0);
-  lv_label_set_text(ui_Label17, "内置准星");
+  lv_label_set_text(ui_Label17, "内置OSD");
   lv_obj_set_style_text_font(ui_Label17, &ui_font_chinese_16,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 

@@ -31,10 +31,11 @@ void lv_loop();
 } // namespace HAL
 
 typedef enum {
-  MODE_MAINPAGE,
-  MODE_MAINMENU,
+  MODE_MAIN,
+  MODE_MENU,
   MODE_GALLERY,
   MODE_GALLERY_MENU,
+  MODE_OSD_SETTINGS,
   MODE_CAMERA_SETTINGS,
   MODE_SYSTEM_SETTINGS,
 } current_mode_t;

@@ -288,6 +288,8 @@ void CameraUtils::set4117Cursor(bool min, bool max) {
         break;
       }
       last_start = this_end + 1;
+      // TODO
+      // <displayAverageTemperatureEnabled>false</displayAverageTemperatureEnabled>
       if (line.find("displayMax") != std::string::npos) {
         if (max) {
           result += "<displayMaxTemperatureEnabled>true</"

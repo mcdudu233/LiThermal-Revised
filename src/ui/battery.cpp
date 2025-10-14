@@ -66,7 +66,7 @@ static int last_battery = 101;
 void battery_loop() {
   static int cnt = 0;
   static bool last_charging = false;
-  if (globalSettings.displayBattery || current_mode == MODE_MAINMENU) {
+  if (globalSettings.displayBattery || current_mode == MODE_MENU) {
     if (!expanded) {
       expanded = true;
       LOCKLV();

@@ -5,7 +5,7 @@ time_t HAL::key_pressed_start_time[3] = {0, 0, 0};
 bool HAL::key_press_event[4] = {0, 0, 0};
 
 int last_encoder_direction = 0; // 记录上次滚动方向，用于在主界面跟踪编码器
-current_mode_t current_mode = MODE_MAINPAGE;
+current_mode_t current_mode = MODE_MAIN;
 bool global_poweroff_request = false;
 
 static pthread_t thread_key, thread_encoder;
@@ -68,7 +68,7 @@ static void *thread_refreshEncoder(void *) {
 }
 // LVGL编码器读取
 static void encoder_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
-  if (current_mode != MODE_MAINPAGE && current_mode != MODE_GALLERY)
+  if (current_mode != MODE_MAIN && current_mode != MODE_GALLERY)
     data->enc_diff = encoder_new_move;
   else
     data->enc_diff = 0;

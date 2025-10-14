@@ -4,13 +4,13 @@
 #define CAMERA_HOST_URL "http://192.168.64.64"
 
 typedef struct temperature_point_t {
-  float maxTemperature;
-  float minTemperature;
-  float averageTemperature;
-  float centerTemperature;
+  double maxTemperature;
+  double minTemperature;
+  double averageTemperature;
+  double centerTemperature;
   struct {
-    float positionX;
-    float positionY;
+    double positionX;
+    double positionY;
   } MaxTemperaturePoint, MinTemperaturePoint;
   bool isFreezedata;
 } temperature_point_t;

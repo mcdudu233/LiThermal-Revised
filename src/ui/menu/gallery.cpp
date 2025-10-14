@@ -294,7 +294,7 @@ static void image_obj_del_current() {
     sprintf(command_buffer, "rm " GALLERY_PATH "/CAP%05d.*", img_id_to_remove);
     system(command_buffer);
     if (totalImages == 0) {
-      current_mode = MODE_MAINPAGE;
+      current_mode = MODE_MAIN;
       menu_gallery_hide();
       return;
     }
@@ -482,7 +482,7 @@ void menu_gallery_show() {
   totalImages = getTotalImages();
   centerImageID = totalImages;
   if (totalImages == 0) {
-    current_mode = MODE_MAINPAGE;
+    current_mode = MODE_MAIN;
     return;
   }
   if (totalImages < 4) {
@@ -522,7 +522,7 @@ void menu_gallery_loop(bool has_hal_go_back_event) {
     if (current_state == GALLERY_STATE_LIST) {
       LOCKLV();
       menu_gallery_hide();
-      current_mode = MODE_MAINPAGE;
+      current_mode = MODE_MAIN;
       UNLOCKLV();
     } else if (current_state == GALLERY_STATE_FULLSCREEN) {
       LOCKLV();
