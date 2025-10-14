@@ -37,6 +37,7 @@ static void crosshairs_update_visibility() {
   if (globalSettings.useBuildinCursors) {
     lv_obj_add_flag(crosshairs_max_obj, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(crosshairs_min_obj, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(crosshairs_label_avg, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(crosshairs_center_obj, LV_OBJ_FLAG_HIDDEN);
     return;
   }
