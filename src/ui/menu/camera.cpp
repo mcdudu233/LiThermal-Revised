@@ -357,9 +357,6 @@ static void menu_camera_construct(lv_obj_t *parent) {
     lv_obj_clear_flag(ui_Slider3, LV_OBJ_FLAG_HIDDEN);
     lv_slider_set_value(ui_Slider3, globalSettings.noiseReduceLevel,
                         LV_ANIM_OFF);
-    lv_snprintf(buf, sizeof(buf), "%d%%", globalSettings.noiseReduceLevel);
-    lv_label_set_text(lv_obj_get_child(ui_Slider3, 0), buf);
-    set_disable(ui_Slider3);
     break;
   }
   case IR_DNR_MODE_GENERAL: {
@@ -372,9 +369,6 @@ static void menu_camera_construct(lv_obj_t *parent) {
     lv_obj_clear_flag(ui_Slider3, LV_OBJ_FLAG_HIDDEN);
     lv_slider_set_value(ui_Slider3, globalSettings.noiseReduceLevel,
                         LV_ANIM_OFF);
-    lv_snprintf(buf, sizeof(buf), "%d%%", globalSettings.noiseReduceLevel);
-    lv_label_set_text(lv_obj_get_child(ui_Slider3, 0), buf);
-    set_enable(ui_Slider3);
     break;
   }
   case IR_DNR_MODE_ADVANCED: {
@@ -385,18 +379,21 @@ static void menu_camera_construct(lv_obj_t *parent) {
     lv_obj_clear_flag(ui_Slider6, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(ui_Label7, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(ui_Slider3, LV_OBJ_FLAG_HIDDEN);
-    lv_slider_set_value(ui_Slider5, globalSettings.noiseReduceFrameLevel,
-                        LV_ANIM_OFF);
-    lv_snprintf(buf, sizeof(buf), "%d%%", globalSettings.noiseReduceFrameLevel);
-    lv_label_set_text(lv_obj_get_child(ui_Slider5, 0), buf);
-    lv_slider_set_value(ui_Slider6, globalSettings.noiseReduceInterFrameLevel,
-                        LV_ANIM_OFF);
-    lv_snprintf(buf, sizeof(buf), "%d%%",
-                globalSettings.noiseReduceInterFrameLevel);
-    lv_label_set_text(lv_obj_get_child(ui_Slider6, 0), buf);
     break;
   }
   }
+  lv_snprintf(buf, sizeof(buf), "%d%%", globalSettings.noiseReduceLevel);
+  lv_label_set_text(lv_obj_get_child(ui_Slider3, 0), buf);
+  set_enable(ui_Slider3);
+  lv_slider_set_value(ui_Slider5, globalSettings.noiseReduceFrameLevel,
+                      LV_ANIM_OFF);
+  lv_snprintf(buf, sizeof(buf), "%d%%", globalSettings.noiseReduceFrameLevel);
+  lv_label_set_text(lv_obj_get_child(ui_Slider5, 0), buf);
+  lv_slider_set_value(ui_Slider6, globalSettings.noiseReduceInterFrameLevel,
+                      LV_ANIM_OFF);
+  lv_snprintf(buf, sizeof(buf), "%d%%",
+              globalSettings.noiseReduceInterFrameLevel);
+  lv_label_set_text(lv_obj_get_child(ui_Slider6, 0), buf);
   if (globalSettings.enableDetailEnhancement) {
     lv_dropdown_set_selected(ui_Dropdown2, 1);
     set_enable(ui_Slider4);
