@@ -193,7 +193,7 @@ void CameraUtils::setDigitalNoiseReduce(int mode, int frameLevel,
            "<mode>general</mode><GeneralMode><generalLevel>" +
            std::to_string(frameLevel) +
            "</generalLevel></GeneralMode></NoiseReduce>";
-  } else {
+  } else if (mode == IR_DNR_MODE_ADVANCED) {
     data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NoiseReduce>"
            "<mode>advanced</mode><AdvancedMode>"
            "<FrameNoiseReduceLevel>" +

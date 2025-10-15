@@ -65,7 +65,7 @@ void *thread_app_func(void *) {
                                           globalSettings.noiseReduceLevel, 0);
       } else if (last_enableNoiseReduce == IR_DNR_MODE_ADVANCED) {
         cameraUtils.setDigitalNoiseReduce(
-            IR_DNR_MODE_GENERAL, globalSettings.noiseReduceFrameLevel,
+            IR_DNR_MODE_ADVANCED, globalSettings.noiseReduceFrameLevel,
             globalSettings.noiseReduceInterFrameLevel);
       } else {
         cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_CLOSE, 0, 0);
