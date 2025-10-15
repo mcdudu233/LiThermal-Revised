@@ -9,6 +9,14 @@ void settings_default() {
   globalSettings.graphPos = 0;
   globalSettings.graphRefreshInterval = 0;
   globalSettings.graphSize = 0;
+  globalSettings.cameraBrightness = 50;
+  globalSettings.cameraContrast = 35;
+  globalSettings.enableNoiseReduce = IR_DNR_MODE_GENERAL;
+  globalSettings.noiseReduceLevel = 25;
+  globalSettings.noiseReduceFrameLevel = 50;
+  globalSettings.noiseReduceInterFrameLevel = 50;
+  globalSettings.enableDetailEnhancement = true;
+  globalSettings.detailEnhancementLevel = 10;
   globalSettings.enableMaxValueDisplay = false;
   globalSettings.enableMinValueDisplay = false;
   globalSettings.enableAvgValueDisplay = false;

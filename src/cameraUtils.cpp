@@ -163,7 +163,19 @@ void CameraUtils::setColorPalette(int palette) {
   cli.Put("/ISAPI/Image/channels/1/Palettes", data, "application/xml");
 }
 
-void CameraUtils::setDigitalNoiceReduce(int mode, int frameLevel,
+void CameraUtils::setBrightnessContrast(int brightness, int contrast) {
+  if (brightness < 0 || brightness > 100)
+    brightness = 50;
+  if (contrast < 0 || contrast > 100)
+    contrast = 35;
+  std::string data =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Color><brightnessLevel>" +
+      std::to_string(brightness) + "</brightnessLevel><contrastLevel>" +
+      std::to_string(contrast) + "</contrastLevel></Color>";
+  cli.Put("/ISAPI/Image/channels/1/color", data, "application/xml");
+}
+
+void CameraUtils::setDigitalNoiseReduce(int mode, int frameLevel,
                                         int interFrameLevel) {
   std::string data;
   //= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DigitalNoiseReduction><mode>";

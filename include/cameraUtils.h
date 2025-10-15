@@ -50,7 +50,8 @@ public:
   std::string getTemperatureAll(); // 获取所有位置的温度
   float getTemperatureCenter();    // 获取摄像头中心温度信息
   void setColorPalette(int palette);
-  void setDigitalNoiceReduce(int mode, int frameLevel, int interFrameLevel);
+  void setBrightnessContrast(int brightness, int contrast);
+  void setDigitalNoiseReduce(int mode, int frameLevel, int interFrameLevel);
   void setDigitalDetailEnhancement(bool en, int level);
   void saveJpegWithExtra(const char *save_filename, bool saveJpeg = true,
                          bool saveExtra = true);

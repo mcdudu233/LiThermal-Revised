@@ -35,6 +35,14 @@ typedef struct settingsStorage_t {
   uint32_t graphPos;
   uint32_t graphSize;
   uint32_t graphRefreshInterval;
+  uint32_t cameraBrightness;
+  uint32_t cameraContrast;
+  uint32_t enableNoiseReduce;
+  uint32_t noiseReduceLevel;
+  uint32_t noiseReduceFrameLevel;
+  uint32_t noiseReduceInterFrameLevel;
+  uint32_t enableDetailEnhancement;
+  uint32_t detailEnhancementLevel;
   uint32_t enableMaxValueDisplay;
   uint32_t enableMinValueDisplay;
   uint32_t enableAvgValueDisplay;

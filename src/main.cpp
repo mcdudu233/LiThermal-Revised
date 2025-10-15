@@ -4,13 +4,21 @@ using namespace std;
 // 热成像刷新线程
 pthread_t thread_app;
 void *thread_app_func(void *) {
-  static uint32_t last_color_palette = -1;
-  static uint32_t last_show_center = -1;
   static int centerRefreshCounter = 0;
+  static uint32_t last_color_palette = -1;
+  static uint32_t last_camera_brightness = -1;
+  static uint32_t last_camera_contrast = -1;
+  static uint32_t last_enableNoiseReduce = -1;
+  static uint32_t last_noiseReduceLevel = -1;
+  static uint32_t last_noiseReduceFrameLevel = -1;
+  static uint32_t last_noiseReduceInterFrameLevel = -1;
+  static uint32_t last_enableDetailEnhancement = -1;
+  static uint32_t last_detailEnhancementLevel = -1;
   static uint32_t last_use4117Cursors = -1;
   static uint32_t last_enableMinValueDisplay = -1;
   static uint32_t last_enableMaxValueDisplay = -1;
   static uint32_t last_enableAvgValueDisplay = -1;
+  static uint32_t last_enableCenterValueDisplay = -1;
   while (!cameraUtils.connected)
     usleep(50000);
   LOCKLV();
@@ -21,6 +29,62 @@ void *thread_app_func(void *) {
     if (last_color_palette != globalSettings.colorPalette) {
       last_color_palette = globalSettings.colorPalette;
       cameraUtils.setColorPalette(globalSettings.colorPalette);
+    }
+    if (last_camera_brightness != globalSettings.cameraBrightness ||
+        last_camera_contrast != globalSettings.cameraContrast) {
+      last_camera_brightness = globalSettings.cameraBrightness;
+      last_camera_contrast = globalSettings.cameraContrast;
+      cameraUtils.setBrightnessContrast(globalSettings.cameraBrightness,
+                                        globalSettings.cameraContrast);
+    }
+    if (last_enableNoiseReduce != globalSettings.enableNoiseReduce) {
+      last_enableNoiseReduce = globalSettings.enableNoiseReduce;
+      last_noiseReduceLevel = globalSettings.noiseReduceLevel;
+      last_noiseReduceFrameLevel = globalSettings.noiseReduceFrameLevel;
+      last_noiseReduceInterFrameLevel =
+          globalSettings.noiseReduceInterFrameLevel;
+      if (last_enableNoiseReduce == IR_DNR_MODE_GENERAL) {
+        cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_GENERAL,
+                                          globalSettings.noiseReduceLevel, 0);
+      } else if (last_enableNoiseReduce == IR_DNR_MODE_ADVANCED) {
+        cameraUtils.setDigitalNoiseReduce(
+            IR_DNR_MODE_GENERAL, globalSettings.noiseReduceFrameLevel,
+            globalSettings.noiseReduceInterFrameLevel);
+      } else {
+        cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_CLOSE, 0, 0);
+      }
+    }
+    if (last_noiseReduceLevel != globalSettings.noiseReduceLevel &&
+        globalSettings.enableNoiseReduce == IR_DNR_MODE_GENERAL) {
+      last_noiseReduceLevel = globalSettings.noiseReduceLevel;
+      cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_GENERAL,
+                                        globalSettings.noiseReduceLevel, 0);
+    }
+    if ((last_noiseReduceFrameLevel != globalSettings.noiseReduceFrameLevel ||
+         last_noiseReduceInterFrameLevel !=
+             globalSettings.noiseReduceInterFrameLevel) &&
+        globalSettings.enableNoiseReduce == IR_DNR_MODE_ADVANCED) {
+      last_noiseReduceFrameLevel = globalSettings.noiseReduceFrameLevel;
+      last_noiseReduceInterFrameLevel =
+          globalSettings.noiseReduceInterFrameLevel;
+      cameraUtils.setDigitalNoiseReduce(
+          IR_DNR_MODE_GENERAL, globalSettings.noiseReduceFrameLevel,
+          globalSettings.noiseReduceInterFrameLevel);
+    }
+    if (last_enableDetailEnhancement !=
+        globalSettings.enableDetailEnhancement) {
+      last_enableDetailEnhancement = globalSettings.enableDetailEnhancement;
+      last_detailEnhancementLevel = globalSettings.detailEnhancementLevel;
+      cameraUtils.setDigitalDetailEnhancement(
+          globalSettings.enableDetailEnhancement,
+          globalSettings.detailEnhancementLevel);
+    }
+    if (last_detailEnhancementLevel != globalSettings.detailEnhancementLevel &&
+        globalSettings.enableDetailEnhancement) {
+      last_detailEnhancementLevel = globalSettings.detailEnhancementLevel;
+      cameraUtils.setDigitalDetailEnhancement(
+          globalSettings.enableDetailEnhancement,
+          globalSettings.detailEnhancementLevel);
     }
     if (last_use4117Cursors != globalSettings.useBuildinCursors) {
       last_use4117Cursors = globalSettings.useBuildinCursors;
@@ -36,12 +100,13 @@ void *thread_app_func(void *) {
       last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
       last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
       last_enableAvgValueDisplay = globalSettings.enableAvgValueDisplay;
-      last_show_center = globalSettings.enableCenterValueDisplay;
+      last_enableCenterValueDisplay = globalSettings.enableCenterValueDisplay;
     }
     if (last_enableMaxValueDisplay != globalSettings.enableMaxValueDisplay ||
         last_enableMinValueDisplay != globalSettings.enableMinValueDisplay ||
         last_enableAvgValueDisplay != globalSettings.enableAvgValueDisplay ||
-        last_show_center != globalSettings.enableCenterValueDisplay) {
+        last_enableCenterValueDisplay !=
+            globalSettings.enableCenterValueDisplay) {
       if (globalSettings.useBuildinCursors) {
         cameraUtils.set4117Cursor(globalSettings.enableMinValueDisplay,
                                   globalSettings.enableMaxValueDisplay,
@@ -51,7 +116,7 @@ void *thread_app_func(void *) {
       last_enableMaxValueDisplay = globalSettings.enableMaxValueDisplay;
       last_enableMinValueDisplay = globalSettings.enableMinValueDisplay;
       last_enableAvgValueDisplay = globalSettings.enableAvgValueDisplay;
-      last_show_center = globalSettings.enableCenterValueDisplay;
+      last_enableCenterValueDisplay = globalSettings.enableCenterValueDisplay;
     }
 
     crosshairs_loop();

@@ -143,25 +143,6 @@ static void menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_style_text_font(ui_list_video_format, &lv_font_montserrat_12,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
-  //  lv_obj_t *ui_Button1 = lv_btn_create(parent);
-  //  lv_obj_set_width(ui_Button1, 140);
-  //  lv_obj_set_height(ui_Button1, 40);
-  //  lv_obj_set_x(ui_Button1, 0);
-  //  lv_obj_set_y(ui_Button1, 100);
-  //  lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
-  //  lv_obj_clear_flag(ui_Button1, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
-  //  lv_obj_set_style_bg_color(ui_Button1, lv_color_hex(0xE28D00),
-  //                            LV_PART_MAIN | LV_STATE_DEFAULT);
-  //  lv_obj_set_style_bg_opa(ui_Button1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-  //
-  //  lv_obj_t *ui_Label12 = lv_label_create(ui_Button1);
-  //  lv_obj_set_width(ui_Label12, LV_SIZE_CONTENT);  /// 1
-  //  lv_obj_set_height(ui_Label12, LV_SIZE_CONTENT); /// 1
-  //  lv_obj_set_align(ui_Label12, LV_ALIGN_CENTER);
-  //  lv_label_set_text(ui_Label12, "手动清除噪声");
-  //  lv_obj_set_style_text_font(ui_Label12, &ui_font_chinese_16,
-  //                             LV_PART_MAIN | LV_STATE_DEFAULT);
-
   lv_obj_t *ui_button_default = lv_btn_create(parent);
   lv_obj_set_width(ui_button_default, 120);
   lv_obj_set_height(ui_button_default, 40);
@@ -239,8 +220,6 @@ static void menu_system_construct(lv_obj_t *parent) {
   lv_obj_set_style_text_font(ui_Label15, &ui_font_chinese_14,
                              LV_PART_MAIN | LV_STATE_DEFAULT);
 
-  //  lv_group_focus_obj(ui_Button1);
-
   lv_obj_add_event_cb(
       ui_switch_save_osd,
       [](lv_event_t *e) {
@@ -300,9 +279,6 @@ static void menu_system_construct(lv_obj_t *parent) {
         }
       },
       LV_EVENT_VALUE_CHANGED, NULL);
-  //  lv_obj_add_event_cb(
-  //      ui_Button1, [](lv_event_t *e) { cameraUtils.calibrateManually(); },
-  //      LV_EVENT_CLICKED, NULL);
   lv_obj_add_event_cb(
       ui_button_default,
       [](lv_event_t *e) {
