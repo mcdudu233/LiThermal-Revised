@@ -186,22 +186,23 @@ void CameraUtils::setDigitalNoiseReduce(int mode, int frameLevel,
   if (interFrameLevel < 0 || interFrameLevel > 100)
     interFrameLevel = 50;
   if (mode == IR_DNR_MODE_CLOSE) {
-    data = "<?xml version=\"1.0\" "
-           "encoding=\"UTF-8\"?><NoiseReduce><mode>close</mode></NoiseReduce>";
+    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+           "<NoiseReduce><mode>close</mode></NoiseReduce>";
   } else if (mode == IR_DNR_MODE_GENERAL) {
-    data = "<?xml version=\"1.0\" "
-           "encoding=\"UTF-8\"?><NoiseReduce><mode>general</"
-           "mode><GeneralMode><generalLevel>" +
+    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NoiseReduce>"
+           "<mode>general</mode><GeneralMode><generalLevel>" +
            std::to_string(frameLevel) +
-           "</frameLevel></GeneralMode></NoiseReduce>";
+           "</generalLevel></GeneralMode></NoiseReduce>";
   } else {
-    data = "<?xml version=\"1.0\" "
-           "encoding=\"UTF-8\"?><NoiseReduce><mode>advanced</"
-           "mode><AdvancedMode><FrameNoiseReduceLevel>" +
+    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NoiseReduce>"
+           "<mode>advanced</mode><AdvancedMode>"
+           "<FrameNoiseReduceLevel>" +
            std::to_string(frameLevel) +
-           "</FrameNoiseReduceLevel><InterFrameNoiseReduceLevel>" +
+           "</FrameNoiseReduceLevel>"
+           "<InterFrameNoiseReduceLevel>" +
            std::to_string(interFrameLevel) +
-           "</InterFrameNoiseReduceLevel></AdvancedMode></NoiseReduce>";
+           "</InterFrameNoiseReduceLevel>"
+           "</AdvancedMode></NoiseReduce>";
   }
   cli.Put("/ISAPI/Image/channels/1/noiseReduce", data, "application/xml");
 }
@@ -211,13 +212,15 @@ void CameraUtils::setDigitalDetailEnhancement(bool en, int level) {
   if (level < 0 || level > 100)
     level = 50;
   if (en) {
-    data =
-        "<?xml version=\"1.0\" "
-        "encoding=\"UTF-8\"?><DDE><mode>on</mode><GeneralMode><enhanceLevel>" +
-        std::to_string(level) + "</enhanceLevel></GeneralMode></DDE>";
+    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DDE>"
+           "<mode>general</mode>"
+           "<GeneralMode><enhanceLevel>" +
+           std::to_string(level) +
+           "</enhanceLevel></GeneralMode>"
+           "</DDE>";
   } else {
-    data = "<?xml version=\"1.0\" "
-           "encoding=\"UTF-8\"?><DDE><mode>close</mode></DDE>";
+    data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+           "<DDE><mode>close</mode></DDE>";
   }
   cli.Put("/ISAPI/Image/channels/1/DDE", data, "application/xml");
 }

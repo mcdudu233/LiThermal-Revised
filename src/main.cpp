@@ -37,6 +37,23 @@ void *thread_app_func(void *) {
       cameraUtils.setBrightnessContrast(globalSettings.cameraBrightness,
                                         globalSettings.cameraContrast);
     }
+    if (last_noiseReduceLevel != globalSettings.noiseReduceLevel &&
+        last_enableNoiseReduce == IR_DNR_MODE_GENERAL) {
+      last_noiseReduceLevel = globalSettings.noiseReduceLevel;
+      cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_GENERAL,
+                                        globalSettings.noiseReduceLevel, 0);
+    }
+    if ((last_noiseReduceFrameLevel != globalSettings.noiseReduceFrameLevel ||
+         last_noiseReduceInterFrameLevel !=
+             globalSettings.noiseReduceInterFrameLevel) &&
+        last_enableNoiseReduce == IR_DNR_MODE_ADVANCED) {
+      last_noiseReduceFrameLevel = globalSettings.noiseReduceFrameLevel;
+      last_noiseReduceInterFrameLevel =
+          globalSettings.noiseReduceInterFrameLevel;
+      cameraUtils.setDigitalNoiseReduce(
+          IR_DNR_MODE_ADVANCED, globalSettings.noiseReduceFrameLevel,
+          globalSettings.noiseReduceInterFrameLevel);
+    }
     if (last_enableNoiseReduce != globalSettings.enableNoiseReduce) {
       last_enableNoiseReduce = globalSettings.enableNoiseReduce;
       last_noiseReduceLevel = globalSettings.noiseReduceLevel;
@@ -54,33 +71,16 @@ void *thread_app_func(void *) {
         cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_CLOSE, 0, 0);
       }
     }
-    if (last_noiseReduceLevel != globalSettings.noiseReduceLevel &&
-        globalSettings.enableNoiseReduce == IR_DNR_MODE_GENERAL) {
-      last_noiseReduceLevel = globalSettings.noiseReduceLevel;
-      cameraUtils.setDigitalNoiseReduce(IR_DNR_MODE_GENERAL,
-                                        globalSettings.noiseReduceLevel, 0);
-    }
-    if ((last_noiseReduceFrameLevel != globalSettings.noiseReduceFrameLevel ||
-         last_noiseReduceInterFrameLevel !=
-             globalSettings.noiseReduceInterFrameLevel) &&
-        globalSettings.enableNoiseReduce == IR_DNR_MODE_ADVANCED) {
-      last_noiseReduceFrameLevel = globalSettings.noiseReduceFrameLevel;
-      last_noiseReduceInterFrameLevel =
-          globalSettings.noiseReduceInterFrameLevel;
-      cameraUtils.setDigitalNoiseReduce(
-          IR_DNR_MODE_GENERAL, globalSettings.noiseReduceFrameLevel,
-          globalSettings.noiseReduceInterFrameLevel);
-    }
-    if (last_enableDetailEnhancement !=
-        globalSettings.enableDetailEnhancement) {
-      last_enableDetailEnhancement = globalSettings.enableDetailEnhancement;
+    if (last_detailEnhancementLevel != globalSettings.detailEnhancementLevel &&
+        last_enableDetailEnhancement) {
       last_detailEnhancementLevel = globalSettings.detailEnhancementLevel;
       cameraUtils.setDigitalDetailEnhancement(
           globalSettings.enableDetailEnhancement,
           globalSettings.detailEnhancementLevel);
     }
-    if (last_detailEnhancementLevel != globalSettings.detailEnhancementLevel &&
+    if (last_enableDetailEnhancement !=
         globalSettings.enableDetailEnhancement) {
+      last_enableDetailEnhancement = globalSettings.enableDetailEnhancement;
       last_detailEnhancementLevel = globalSettings.detailEnhancementLevel;
       cameraUtils.setDigitalDetailEnhancement(
           globalSettings.enableDetailEnhancement,
