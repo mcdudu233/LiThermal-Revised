@@ -1,6 +1,11 @@
 # LiThermal 热成像相机 修订版
 
-![封面](https://github.com/user-attachments/assets/4fc6f390-e887-44be-a5c8-28915dc0e16e)
+![主页](https://github.com/user-attachments/assets/86de5050-368a-4391-a045-bc6535dda865)
+![设置界面](https://github.com/user-attachments/assets/689b0781-f7b4-4216-be48-0a0aed408311)
+![相机设置界面](https://github.com/user-attachments/assets/978f093e-bc25-4bd2-97d0-43cad170b016)
+
+
+
 
 这个项目是基于[LiThermal](https://github.com/diylxy/LiThermal)的改进，增加了以下功能。
 
