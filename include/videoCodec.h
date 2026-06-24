@@ -13,6 +13,8 @@ extern "C" {
 }
 #endif
 
+extern bool packet_dumping;
+
 bool codec_openStream(const char *url);
 
 void codec_closeEverything();
@@ -34,3 +36,9 @@ void codec_enablePacketDumping(bool en, const char *dump_target,
  * @note 该函数会阻塞直到获取到一帧解码后的图像
  */
 AVFrame *codec_getFrame();
+
+/**
+ * @brief 将带OSD的BGRA帧编码写入MP4（仅在录制OSD模式下使用）
+ * @param bgra_data ARGB8888格式的帧数据（来自lv_snapshot_take）
+ */
+void codec_encodeOSDFrame(const uint8_t *bgra_data);

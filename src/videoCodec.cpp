@@ -1,4 +1,5 @@
 #include "videoCodec.h"
+#include "settings.h"
 #include <stdio.h>
 AVFormatContext *input_ctx = NULL;
 AVFormatContext *output_ctx_mp4 = NULL;
@@ -10,6 +11,8 @@ AVStream *out_stream_mp4 = NULL;
 AVStream *out_stream_mjpeg = NULL;
 struct SwsContext *sws_ctx = NULL;
 struct SwsContext *sws_ctx_yuv = NULL;
+struct SwsContext *sws_ctx_osd = NULL;
+static int64_t osd_frame_pts = 0;
 AVPacket *encoded_packet = NULL;
 AVPacket *packet = NULL;
 AVFrame *frame = NULL;
@@ -180,6 +183,10 @@ void codec_closeEverything() {
     sws_freeContext(sws_ctx_yuv);
     sws_ctx_yuv = NULL;
   }
+  if (sws_ctx_osd != NULL) {
+    sws_freeContext(sws_ctx_osd);
+    sws_ctx_osd = NULL;
+  }
 }
 
 int openOutputFile(const char *output_file, bool saveMp4, bool saveMjpeg) {
@@ -279,6 +286,7 @@ void codec_enablePacketDumping(bool en, const char *dump_target, bool saveMp4,
     {
       openOutputFile(dump_target, saveMp4, saveMjpeg);
       isFirstPTS = true;
+      osd_frame_pts = 0;
     } else {
       if (output_ctx_mp4 != NULL) {
         int ret;
@@ -367,7 +375,7 @@ AVFrame *codec_getFrame() {
         // 进行MPEG4编码
         LOCKRECORDER();
         if (packet_dumping) {
-          if (output_ctx_mp4 != NULL && encoder_ctx != NULL) {
+          if (output_ctx_mp4 != NULL && encoder_ctx != NULL && !globalSettings.preserveOSD) {
             // 转换到YUV420P格式（MPEG4编码需要）
             if (!sws_ctx_yuv) {
               sws_ctx_yuv = sws_getContext(frame->width, frame->height,
@@ -447,4 +455,47 @@ AVFrame *codec_getFrame() {
   }
   printf("got nothing\n");
   return NULL;
+}
+
+void codec_encodeOSDFrame(const uint8_t *bgra_data) {
+  LOCKRECORDER();
+  if (!packet_dumping || output_ctx_mp4 == NULL || encoder_ctx == NULL) {
+    UNLOCKRECORDER();
+    return;
+  }
+  if (!sws_ctx_osd) {
+    sws_ctx_osd = sws_getContext(decoder_ctx->width, decoder_ctx->height,
+                                 AV_PIX_FMT_BGRA,
+                                 decoder_ctx->width, decoder_ctx->height,
+                                 AV_PIX_FMT_YUV420P, SWS_BILINEAR,
+                                 NULL, NULL, NULL);
+  }
+  const uint8_t *src_data[1] = {bgra_data};
+  int src_linesize[1] = {decoder_ctx->width * 4};
+
+  AVFrame *yuv_frame = av_frame_alloc();
+  yuv_frame->format = AV_PIX_FMT_YUV420P;
+  yuv_frame->width = decoder_ctx->width;
+  yuv_frame->height = decoder_ctx->height;
+  av_frame_get_buffer(yuv_frame, 0);
+  sws_scale(sws_ctx_osd, src_data, src_linesize, 0, decoder_ctx->height,
+            yuv_frame->data, yuv_frame->linesize);
+  yuv_frame->pts = osd_frame_pts++;
+
+  int ret = avcodec_send_frame(encoder_ctx, yuv_frame);
+  if (ret >= 0) {
+    while (true) {
+      ret = avcodec_receive_packet(encoder_ctx, encoded_packet);
+      if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) break;
+      if (ret < 0) break;
+      av_packet_rescale_ts(encoded_packet, encoder_ctx->time_base,
+                           out_stream_mp4->time_base);
+      encoded_packet->stream_index = out_stream_mp4->index;
+      encoded_packet->pos = -1;
+      av_interleaved_write_frame(output_ctx_mp4, encoded_packet);
+      av_packet_unref(encoded_packet);
+    }
+  }
+  av_frame_free(&yuv_frame);
+  UNLOCKRECORDER();
 }

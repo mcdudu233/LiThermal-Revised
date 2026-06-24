@@ -126,6 +126,17 @@ void *thread_refresh_image(void *) {
       lv_obj_invalidate(videoPlayer.img_obj);
       UNLOCKLV();
 
+      if (packet_dumping && globalSettings.preserveOSD) {
+        LOCKLV();
+        lv_img_dsc_t *snap =
+            lv_snapshot_take(lv_scr_act(), LV_IMG_CF_TRUE_COLOR);
+        UNLOCKLV();
+        if (snap) {
+          codec_encodeOSDFrame(snap->data);
+          lv_snapshot_free(snap);
+        }
+      }
+
       usleep(1 * 1000);
       sem_trywait(&sem_video);
     } break;
